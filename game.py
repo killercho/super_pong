@@ -1,6 +1,7 @@
 """ Game class holding the entirety of the game. """
 
 import pygame
+from paddle import Paddle
 
 pygame.init()
 
@@ -20,6 +21,18 @@ size = (1280, 720)
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Super Pong")
 
+a_paddle = Paddle(WHITE, 10, 100)
+a_paddle.rect.x = 30
+a_paddle.rect.y = 310
+
+b_paddle = Paddle(WHITE, 10, 100)
+b_paddle.rect.x = 1250
+b_paddle.rect.y = 310
+
+all_sprites_list = pygame.sprite.Group()
+all_sprites_list.add(a_paddle)
+all_sprites_list.add(b_paddle)
+
 a_name = "Player 1"
 b_name = "Player 2"
 a_score = 0
@@ -37,7 +50,21 @@ while game_running:
             if event.key == pygame.K_ESCAPE:
                 game_running = False
 
+    pressed_keys = pygame.key.get_pressed()
+    if pressed_keys[pygame.K_w]:
+        a_paddle.move_up(6)
+    if pressed_keys[pygame.K_s]:
+        a_paddle.move_down(6)
+    if pressed_keys[pygame.K_UP]:
+        b_paddle.move_up(6)
+    if pressed_keys[pygame.K_DOWN]:
+        b_paddle.move_down(6)
+
+    all_sprites_list.update()
+
     screen.fill(BLACK)
+
+    all_sprites_list.draw(screen)
 
     # creating punctured line
     for i in range(0, 720, 72):
