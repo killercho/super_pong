@@ -1,5 +1,7 @@
 """ Constants file that holds all the constants needed for the game """
 
+import pygame_menu
+
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
@@ -26,3 +28,9 @@ B_PADDLE_X = SCREEN_SIZE[0] - PADDLES_OFFSET_X
 B_PADDLE_Y = (SCREEN_SIZE[1] - PADDLE_LENGTH) / 2
 
 PADDLE_SPEED = 6
+
+MENU_THEME = pygame_menu.themes.THEME_DARK
+
+DEFAULT_NAME_1 = "Player 1"
+DEFAULT_NAME_2 = "Player 2"
+MAX_NAME_SYMBOLS = 10
