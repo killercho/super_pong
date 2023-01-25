@@ -1,8 +1,7 @@
 """ Game class which operates the game. """
 
-from sys import exit
+import sys
 import pygame
-import pygame_menu
 import constants as c
 from paddle import Paddle
 from ball import Ball
@@ -120,4 +119,4 @@ class Game:
             self.__clock.tick(60)
 
         pygame.quit()
-        exit()
+        sys.exit()
