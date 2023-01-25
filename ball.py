@@ -14,7 +14,7 @@ class Ball(pygame.sprite.Sprite):
 
         pygame.draw.circle(self.image, color, (radius, radius), radius)
 
-        self.velocity = [randint(4, 8), randint(-8, 8)]
+        self.velocity: int = [randint(4, 8), randint(-8, 8)]
 
         self.rect = self.image.get_rect()
 

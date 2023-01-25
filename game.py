@@ -12,15 +12,15 @@ pygame.init()
 screen = pygame.display.set_mode(c.SCREEN_SIZE)
 pygame.display.set_caption("Super Pong")
 
-paddle_1 = Paddle(c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
+paddle_1: Paddle = Paddle(c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
 paddle_1.rect.x = c.A_PADDLE_X
 paddle_1.rect.y = c.A_PADDLE_Y
 
-paddle_2 = Paddle(c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
+paddle_2: Paddle = Paddle(c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
 paddle_2.rect.x = c.B_PADDLE_X
 paddle_2.rect.y = c.B_PADDLE_Y
 
-ball = Ball(c.WHITE, 10)
+ball: Ball = Ball(c.WHITE, c.BALL_RADIUS)
 ball.rect.x = c.SCREEN_SIZE[0] / 2 - 5
 ball.rect.y = (c.SCREEN_SIZE[1] + c.TOP_LINE_Y / 2) / 2
 
@@ -35,17 +35,17 @@ clock = pygame.time.Clock()
 
 
 def start_game():
-    name_1_data = name_1_input_field.get_value()[:c.MAX_NAME_SYMBOLS]
-    name_2_data = name_2_input_field.get_value()[:c.MAX_NAME_SYMBOLS]
-    name_1 = c.DEFAULT_NAME_1 if name_1_data == "" else name_1_data
-    name_2 = c.DEFAULT_NAME_2 if name_2_data == "" else name_2_data
+    name_1_data: str = name_1_input_field.get_value()[:c.MAX_NAME_SYMBOLS]
+    name_2_data: str = name_2_input_field.get_value()[:c.MAX_NAME_SYMBOLS]
+    name_1: str = c.DEFAULT_NAME_1 if name_1_data == "" else name_1_data
+    name_2: str = c.DEFAULT_NAME_2 if name_2_data == "" else name_2_data
 
-    score_1 = 0
-    score_2 = 0
+    score_1: int = 0
+    score_2: int = 0
 
-    target_score = 50
+    target_score: int = 50
 
-    game_running = True
+    game_running: bool = True
     while game_running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -66,7 +66,7 @@ def start_game():
 
         all_sprites_list.update()
 
-        if ball.rect.x >= 1275:
+        if ball.rect.x >= c.SCREEN_SIZE[0] - c.BALL_RADIUS * 2:
             score_1 += 1
             ball.velocity[0] = -ball.velocity[0]  # here we refresh the game
         elif ball.rect.x <= 0:
@@ -74,7 +74,7 @@ def start_game():
             ball.velocity[0] = -ball.velocity[0]  # here also
         if ball.rect.y < c.TOP_LINE_Y + 5:
             ball.velocity[1] = -ball.velocity[1]
-        elif ball.rect.y >= 715:
+        elif ball.rect.y >= c.SCREEN_SIZE[1] - c.BALL_RADIUS * 2:
             ball.velocity[1] = -ball.velocity[1]
 
         hit_paddle_1 = pygame.sprite.collide_mask(ball, paddle_1)
