@@ -31,3 +31,12 @@ class Ball(pygame.sprite.Sprite):
     def set_coordinates(self, new_x, new_y):
         self.rect.x = new_x
         self.rect.y = new_y
+
+    def get_ball_position(self):
+        return self.rect.x, self.rect.y
+
+    def reverse_velocity_x(self):
+        self.velocity[0] = -self.velocity[0]
+
+    def reverse_velocity_y(self):
+        self.velocity[1] = -self.velocity[1]
