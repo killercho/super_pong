@@ -5,23 +5,29 @@ import pygame
 import pygame_menu
 import constants as c
 from paddle import Paddle
+from ball import Ball
 
 pygame.init()
 
 screen = pygame.display.set_mode(c.SCREEN_SIZE)
 pygame.display.set_caption("Super Pong")
 
-a_paddle = Paddle(c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
-a_paddle.rect.x = c.A_PADDLE_X
-a_paddle.rect.y = c.A_PADDLE_Y
+paddle_1 = Paddle(c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
+paddle_1.rect.x = c.A_PADDLE_X
+paddle_1.rect.y = c.A_PADDLE_Y
 
-b_paddle = Paddle(c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
-b_paddle.rect.x = c.B_PADDLE_X
-b_paddle.rect.y = c.B_PADDLE_Y
+paddle_2 = Paddle(c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
+paddle_2.rect.x = c.B_PADDLE_X
+paddle_2.rect.y = c.B_PADDLE_Y
+
+ball = Ball(c.WHITE, 10)
+ball.rect.x = c.SCREEN_SIZE[0] / 2 - 5
+ball.rect.y = (c.SCREEN_SIZE[1] + c.TOP_LINE_Y / 2) / 2
 
 all_sprites_list = pygame.sprite.Group()
-all_sprites_list.add(a_paddle)
-all_sprites_list.add(b_paddle)
+all_sprites_list.add(paddle_1)
+all_sprites_list.add(paddle_2)
+all_sprites_list.add(ball)
 
 INGAME_TEXT_FONT = pygame.font.Font(None, 100)
 
@@ -37,6 +43,8 @@ def start_game():
     score_1 = 0
     score_2 = 0
 
+    target_score = 50
+
     game_running = True
     while game_running:
         for event in pygame.event.get():
@@ -48,15 +56,31 @@ def start_game():
 
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[pygame.K_w]:
-            a_paddle.move_up(c.PADDLE_SPEED)
+            paddle_1.move_up(c.PADDLE_SPEED)
         if pressed_keys[pygame.K_s]:
-            a_paddle.move_down(c.PADDLE_SPEED)
+            paddle_1.move_down(c.PADDLE_SPEED)
         if pressed_keys[pygame.K_UP]:
-            b_paddle.move_up(c.PADDLE_SPEED)
+            paddle_2.move_up(c.PADDLE_SPEED)
         if pressed_keys[pygame.K_DOWN]:
-            b_paddle.move_down(c.PADDLE_SPEED)
+            paddle_2.move_down(c.PADDLE_SPEED)
 
         all_sprites_list.update()
+
+        if ball.rect.x >= 1275:
+            score_1 += 1
+            ball.velocity[0] = -ball.velocity[0]  # here we refresh the game
+        elif ball.rect.x <= 0:
+            score_2 += 1
+            ball.velocity[0] = -ball.velocity[0]  # here also
+        if ball.rect.y < c.TOP_LINE_Y + 5:
+            ball.velocity[1] = -ball.velocity[1]
+        elif ball.rect.y >= 715:
+            ball.velocity[1] = -ball.velocity[1]
+
+        hit_paddle_1 = pygame.sprite.collide_mask(ball, paddle_1)
+        hit_paddle_2 = pygame.sprite.collide_mask(ball, paddle_2)
+        if hit_paddle_1 or hit_paddle_2:
+            ball.bounce()
 
         screen.fill(c.BLACK)
 
@@ -85,6 +109,10 @@ def start_game():
         screen.blit(text, (854, 20))
 
         pygame.display.flip()
+
+        if score_1 >= target_score or score_2 >= target_score:
+            game_running = False
+
         clock.tick(60)
 
     pygame.quit()
@@ -106,19 +134,26 @@ def quit_game():
 
 # Menu Declarations
 
-
+# Main menu
 main_menu = pygame_menu.Menu("Super Pong", c.SCREEN_SIZE[0], c.SCREEN_SIZE[1],
                              theme=c.MENU_THEME)
 main_menu.add.button("Play", game_settings_menu)
 main_menu.add.button("Options", options_menu_func)
 main_menu.add.button("Quit", pygame_menu.events.EXIT)
 
+# Start menu
 start_menu = pygame_menu.Menu("Game settings", c.SCREEN_SIZE[0],
                               c.SCREEN_SIZE[1], theme=c.MENU_THEME)
+
 name_1_input_field = start_menu.add.text_input("Player 1 name: ", default="")
+name_1_input_field._alignment = pygame_menu.locals.ALIGN_LEFT
+name_1_input_field._margin = (c.SCREEN_SIZE[0] / 10, 0)
 name_2_input_field = start_menu.add.text_input("Player 2 name: ", default="")
+name_2_input_field._alignment = pygame_menu.locals.ALIGN_RIGHT
+
 start_menu.add.button("Start game", start_game)
 
+# Options menu
 options_menu = pygame_menu.Menu("Options", c.SCREEN_SIZE[0], c.SCREEN_SIZE[1],
                                 theme=c.MENU_THEME)
 # Options idea -> Music volume and sounds volume,
