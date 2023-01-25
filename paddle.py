@@ -27,3 +27,7 @@ class Paddle(pygame.sprite.Sprite):
 
         if self.rect.y > constants.BOTTOM_LINE_Y:
             self.rect.y = constants.BOTTOM_LINE_Y
+    
+    def set_coordinates(self, new_x, new_y):
+        self.rect.x = new_x
+        self.rect.y = new_y

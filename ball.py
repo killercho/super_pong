@@ -27,3 +27,7 @@ class Ball(pygame.sprite.Sprite):
                                                 if self.velocity[0] < 0
                                                 else randint(-10, 0) / 100)
         self.velocity[1] = randint(-8, 8)
+
+    def set_coordinates(self, new_x, new_y):
+        self.rect.x = new_x
+        self.rect.y = new_y
