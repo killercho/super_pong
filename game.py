@@ -9,12 +9,11 @@ from ball import Ball
 
 pygame.init()
 
+
 class Game:
     """ Game class which starts and operates the game. """
 
     def __init__(self, screen, name_1_data, name_2_data):
-        # self.__screen = pygame.display.set_mode(c.SCREEN_SIZE)
-        # pygame.display.set_caption("Super Pong")
         self.__screen = screen
         self.__name_1 = name_1_data
         self.__name_2 = name_2_data
@@ -39,42 +38,7 @@ class Game:
         self.__INGAME_TEXT_FONT = pygame.font.Font(None, 100)
 
         self.__clock = pygame.time.Clock()
-        self.__start_game();
-        # Menu Declarations
-        # Main menu
-        # self.__main_menu = pygame_menu.Menu("Super Pong", c.SCREEN_SIZE[0], c.SCREEN_SIZE[1],
-        #                                     theme=c.MENU_THEME)
-        # self.__main_menu.add.button("Play", self.__game_settings_menu)
-        # self.__main_menu.add.button("Options", self.__options_menu_func)
-        # self.__main_menu.add.button("Quit", pygame_menu.events.EXIT)
-
-        # # Start menu
-        # self.__start_menu = pygame_menu.Menu("Game settings", c.SCREEN_SIZE[0],
-        #                                      c.SCREEN_SIZE[1], theme=c.MENU_THEME)
-
-        # self.__name_1_input_field = self.__start_menu.add.text_input(
-        #     "Player 1 name: ", default="")
-        # self.__name_1_input_field._alignment = pygame_menu.locals.ALIGN_LEFT
-        # self.__name_1_input_field._margin = (c.SCREEN_SIZE[0] / 10, 0)
-        # self.__name_2_input_field = self.__start_menu.add.text_input(
-        #     "Player 2 name: ", default="")
-        # self.__name_2_input_field._alignment = pygame_menu.locals.ALIGN_RIGHT
-
-        # self.__start_menu.add.button("Start game", self.__start_game)
-
-        # # Options menu
-        # self.__options_menu = pygame_menu.Menu("Options", c.SCREEN_SIZE[0], c.SCREEN_SIZE[1],
-        #                                        theme=c.MENU_THEME)
-        # # Options idea -> Music volume and sounds volume,
-        # #       selector for what power-ups are in the game
-
-        # self.__main_menu.mainloop(self.__screen)
-
-    # def __game_settings_menu(self):
-    #     self.__main_menu._open(self.__start_menu)
-
-    # def __options_menu_func(self):
-    #     self.__main_menu._open(self.__options_menu)
+        self.__start_game()
 
     def __start_game(self):
         score_1: int = 0
