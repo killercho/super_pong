@@ -1,9 +1,9 @@
 """ Main method for starting the game. """
 
-from game import Game
+from main_menu import Menu
 
 def run_game():
-    return Game()
+    return Menu()
 
 if __name__ == "__main__":
     run_game()

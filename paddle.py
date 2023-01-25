@@ -1,7 +1,7 @@
 """ A Paddle class implementing the logic behind the paddles in Pong """
 
 import pygame
-import constants
+import constants as c
 
 
 class Paddle(pygame.sprite.Sprite):
@@ -9,8 +9,8 @@ class Paddle(pygame.sprite.Sprite):
         super().__init__()
 
         self.image = pygame.Surface([width, height])
-        self.image.fill(constants.BLACK)
-        self.image.set_colorkey(constants.BLACK)
+        self.image.fill(c.BLACK)
+        self.image.set_colorkey(c.BLACK)
 
         pygame.draw.rect(self.image, color, [0, 0, width, height])
 
@@ -19,15 +19,15 @@ class Paddle(pygame.sprite.Sprite):
     def move_up(self, pixels):
         self.rect.y -= pixels
 
-        if self.rect.y < constants.TOP_LINE_Y:
-            self.rect.y = constants.TOP_LINE_Y
+        if self.rect.y < c.TOP_LINE_Y:
+            self.rect.y = c.TOP_LINE_Y
 
     def move_down(self, pixels):
         self.rect.y += pixels
 
-        if self.rect.y > constants.BOTTOM_LINE_Y:
-            self.rect.y = constants.BOTTOM_LINE_Y
-    
+        if self.rect.y > c.BOTTOM_LINE_Y:
+            self.rect.y = c.BOTTOM_LINE_Y
+
     def set_coordinates(self, new_x, new_y):
         self.rect.x = new_x
         self.rect.y = new_y
