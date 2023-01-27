@@ -22,6 +22,8 @@ class Menu:
                                                theme=c.MENU_THEME)
         self.__game_id_menu = pygame_menu.Menu(
             "Game Id", c.SCREEN_SIZE[0] // 2, c.SCREEN_SIZE[1] // 2, theme=c.MENU_THEME)
+        self.__game_joined_menu = pygame_menu.Menu(
+            "Game lobby", c.SCREEN_SIZE[0], c.SCREEN_SIZE[1], theme=c.MENU_THEME)
 
         # Main menu:
         self.__name_input = self.__main_menu.add.text_input(
@@ -35,9 +37,16 @@ class Menu:
         self.__game_id = self.__game_id_menu.add.text_input("Id: ", default="")
         self.__game_id_menu.add.button("Join game", self.__join_game)
 
+        # Game Joined menu:
+        self.__game_id_label = self.__game_joined_menu.add.label(
+            "")  # self.__game_id.get_value())
+        self.__game_joined_menu.add.button("Ready", self.__player_ready)
+
         # Host menu:
         self.__player_label = self.__start_menu.add.label(
             "Waiting for player...")
+        self.__player_ready_label = self.__start_menu.add.label(
+            "")
         # Changing the message displayed -> self.__player_label.set_title("playert")
         self.__start_menu.add.button("Start game", self.__start_game)
 
@@ -46,8 +55,12 @@ class Menu:
 
         self.__main_menu.mainloop(self.__screen)
 
-    def __join_game(self):
+    def __player_ready(self):
         pass
+
+    def __join_game(self):
+        self.__game_id_label.set_title(self.__game_id.get_value())
+        self.__main_menu._open(self.__game_joined_menu)
 
     def __start_game(self):
         return Game(self.__screen, self.__name_input.get_value(), c.DEFAULT_NAME_2)
