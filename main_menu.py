@@ -2,7 +2,7 @@
 
 import pygame
 import pygame_menu
-from game import Game
+from client import Client
 import constants as c
 
 
@@ -38,9 +38,9 @@ class Menu:
         self.__game_id_menu.add.button("Join game", self.__join_game)
 
         # Game Joined menu:
-        self.__game_id_label = self.__game_joined_menu.add.label(
-            "")  # self.__game_id.get_value())
-        self.__game_joined_menu.add.button("Ready", self.__player_ready)
+        # self.__game_id_label = self.__game_joined_menu.add.label(
+        #     "")  # self.__game_id.get_value())
+        # self.__game_joined_menu.add.button("Ready", self.__player_ready)
 
         # Host menu:
         self.__player_label = self.__start_menu.add.label(
@@ -56,11 +56,11 @@ class Menu:
         self.__main_menu.mainloop(self.__screen)
 
     def __player_ready(self):
-        pass
+        return Client(self.__screen, self.__name_input.get_value())
 
     def __join_game(self):
-        self.__game_id_label.set_title(self.__game_id.get_value())
+        # self.__game_id_label.set_title(self.__game_id.get_value())
         self.__main_menu._open(self.__game_joined_menu)
 
     def __start_game(self):
-        return Game(self.__screen, self.__name_input.get_value(), c.DEFAULT_NAME_2)
+        return Client(self.__screen, self.__name_input.get_value())

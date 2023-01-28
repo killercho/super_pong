@@ -1,6 +1,5 @@
 """ Game class which operates the game. """
 
-import sys
 import pygame
 import constants as c
 from paddle import Paddle
@@ -10,113 +9,94 @@ pygame.init()
 
 
 class Game:
-    """ Game class which starts and operates the game. """
+    """ Game class which holds the game. """
 
-    def __init__(self, screen, name_1_data, name_2_data):
-        self.__screen = screen
-        self.__name_1 = name_1_data
-        self.__name_2 = name_2_data
-
-        self.__paddle_1: Paddle = Paddle(
-            c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
-        self.__paddle_1.set_coordinates(c.A_PADDLE_X, c.A_PADDLE_Y)
-
-        self.__paddle_2: Paddle = Paddle(
-            c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
-        self.__paddle_2.set_coordinates(c.B_PADDLE_X, c.B_PADDLE_Y)
-
-        self.__ball: Ball = Ball(c.WHITE, c.BALL_RADIUS)
+    def __init__(self, id):
+        self.__id: int = id
+        self.__name_1: str
+        self.__name_2: str
+        self.__score_1: int = 0
+        self.__score_2: int = 0
+        self.__paddle_1 = Paddle(c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
+        self.__paddle_2 = Paddle(c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
+        self.__ball = Ball(c.WHITE, c.BALL_RADIUS)
         self.__ball.set_coordinates(c.SCREEN_SIZE[0] / 2 - 5,
                                     (c.SCREEN_SIZE[1] + c.TOP_LINE_Y / 2) / 2)
+        self.__end_points: int = 10  # make dynamic from the host menu!
+        self.__ready = False
 
-        self.__all_sprites_list = pygame.sprite.Group()
-        self.__all_sprites_list.add(self.__paddle_1)
-        self.__all_sprites_list.add(self.__paddle_2)
-        self.__all_sprites_list.add(self.__ball)
+    def connected(self):
+        return self.__ready
 
-        self.__INGAME_TEXT_FONT = pygame.font.Font(None, 100)
+    def winner(self):
+        if self.__score_1 >= self.__end_points:
+            return 1
+        return 2
 
-        self.__clock = pygame.time.Clock()
-        self.__start_game()
+    def ball_update(self):
+        self.__ball.update()
 
-    def __start_game(self):
-        score_1: int = 0
-        score_2: int = 0
+    def ball_bounce(self):
+        self.__ball.bounce()
 
-        target_score: int = 50
+    def reverse_ball_x(self):
+        self.__ball.reverse_velocity_x
 
-        game_running: bool = True
-        while game_running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    game_running = False
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        game_running = False
+    def reverse_ball_y(self):
+        self.__ball.reverse_velocity_y
 
-            pressed_keys = pygame.key.get_pressed()
-            if pressed_keys[pygame.K_w]:
-                self.__paddle_1.move_up(c.PADDLE_SPEED)
-            if pressed_keys[pygame.K_s]:
-                self.__paddle_1.move_down(c.PADDLE_SPEED)
-            if pressed_keys[pygame.K_UP]:
-                self.__paddle_2.move_up(c.PADDLE_SPEED)
-            if pressed_keys[pygame.K_DOWN]:
-                self.__paddle_2.move_down(c.PADDLE_SPEED)
+    def move_one_up(self):
+        self.__paddle_1.move_up(c.PADDLE_SPEED)
 
-            self.__all_sprites_list.update()
+    def move_one_down(self):
+        self.__paddle_1.move_down(c.PADDLE_SPEED)
 
-            if self.__ball.get_ball_position()[0] >= c.SCREEN_SIZE[0] - c.BALL_RADIUS * 2:
-                score_1 += 1
-                self.__ball.reverse_velocity_x()
-            elif self.__ball.get_ball_position()[0] <= 0:
-                score_2 += 1
-                self.__ball.reverse_velocity_x()
-            if self.__ball.get_ball_position()[1] < c.TOP_LINE_Y + 5:
-                self.__ball.reverse_velocity_y()
-            elif self.__ball.get_ball_position()[1] >= c.SCREEN_SIZE[1] - c.BALL_RADIUS * 2:
-                self.__ball.reverse_velocity_y()
+    def move_two_up(self):
+        self.__paddle_2.move_up(c.PADDLE_SPEED)
 
-            hit_paddle_1 = pygame.sprite.collide_mask(
-                self.__ball, self.__paddle_1)
-            hit_paddle_2 = pygame.sprite.collide_mask(
-                self.__ball, self.__paddle_2)
-            if hit_paddle_1 or hit_paddle_2:
-                self.__ball.bounce()
+    def move_two_down(self):
+        self.__paddle_2.move_down(c.PADDLE_SPEED)
 
-            self.__screen.fill(c.BLACK)
+    def increase_score_one(self):
+        self.__score_1 += 1
+        # stop the game for some time
 
-            self.__all_sprites_list.draw(self.__screen)
+    def increase_score_two(self):
+        self.__score_2 += 1
+        # stop the game for some time
 
-            # creating punctured line
-            for i in range(0, c.SCREEN_SIZE[1], c.MIDDLE_LINES_STEP):
-                vertical_line_size = (c.LINES_WIDTH, 64)
-                vertical_line = pygame.Surface(
-                    vertical_line_size, pygame.SRCALPHA)
-                vertical_line.fill((255, 255, 255, 70))
-                self.__screen.blit(vertical_line, (636, i))
+    def set_player_ready(self):
+        self.__ready = True
 
-            pygame.draw.line(self.__screen, c.WHITE, [0, c.TOP_LINE_Y],
-                             [c.SCREEN_SIZE[0], c.TOP_LINE_Y], c.LINES_WIDTH)
-            pygame.draw.line(self.__screen, c.WHITE, [639, 0], [639, 100],
-                             c.LINES_WIDTH)
+    def get_name_2(self):
+        return self.__name_2
 
-            text = self.__INGAME_TEXT_FONT.render(str(score_1), 1, c.WHITE)
-            self.__screen.blit(text, (532, 20))
-            text = self.__INGAME_TEXT_FONT.render(str(score_2), 1, c.WHITE)
-            self.__screen.blit(text, (722, 20))
+    def set_name_2(self, name):
+        self.__name_2 = name
 
-            text = self.__INGAME_TEXT_FONT.render(self.__name_1, 1, c.WHITE)
-            self.__screen.blit(text, (100, 20))
-            text = self.__INGAME_TEXT_FONT.render(self.__name_2, 1, c.WHITE)
-            self.__screen.blit(text, (854, 20))
+    def get_name_1(self):
+        return self.__name_1
 
-            pygame.display.flip()
+    def set_name_1(self, name):
+        self.__name_1 = name
 
-            if score_1 >= target_score or score_2 >= target_score:
-                game_running = False
+    def get_end_points(self):
+        return self.__end_points
 
-            self.__clock.tick(60)
+    def get_ball_pos(self):
+        return self.__pos_ball
 
-        pygame.quit()
-        sys.exit()
+    def set_ball_pos(self, pos):
+        self.__pos_ball = pos
+
+    def get_pos_1(self):
+        return self.__pos_1
+
+    def set_pos_1(self, pos):
+        self.__pos_1 = pos
+
+    def get_pos_2(self):
+        return self.__pos_2
+
+    def set_pos_2(self, pos):
+        self.__pos_2 = pos

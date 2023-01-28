@@ -37,6 +37,9 @@ class Ball(pygame.sprite.Sprite):
         self.rect.x = new_x
         self.rect.y = new_y
 
+    def get_coordinates(self):
+        return self.rect.x, self.rect.y
+
     def get_ball_position(self):
         """Method allowing for the ball position to be accessed."""
         return self.rect.x, self.rect.y

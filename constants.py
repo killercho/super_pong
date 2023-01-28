@@ -36,3 +36,7 @@ MENU_THEME = pygame_menu.themes.THEME_DARK
 DEFAULT_NAME_1: str = "Player 1"
 DEFAULT_NAME_2: str = "Player 2"
 MAX_NAME_SYMBOLS: int = 10
+
+PORT: int = 5555
+HOST_IP_ADDRESS: str = "192.168.1.9"
+SEND_SIZE: int = 2048
