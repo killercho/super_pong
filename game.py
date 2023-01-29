@@ -22,6 +22,8 @@ class Game:
         self.__spawned_powers = []
         self.__spawned_powers_count = 0
 
+        self.__paddle_speeds = [c.PADDLE_SPEED, c.PADDLE_SPEED]
+
         self.__paddle_1: Paddle = Paddle(
             c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
         self.__paddle_1.set_coordinates(c.A_PADDLE_X, c.A_PADDLE_Y)
@@ -45,21 +47,27 @@ class Game:
         self.__start_game()
 
     def __spawn_random_power(self):
-        print("new power up should spawn")
         new_power_x = randrange(
             c.POWER_OFFSET, c.SCREEN_SIZE[0] - c.POWER_OFFSET)
         new_power_y = randrange(
             c.TOP_LINE_Y + c.POWER_OFFSET, c.SCREEN_SIZE[1] - c.POWER_OFFSET)
         new_power: Power_Up = Power_Up(
-            "random power", c.POWER_UP_SIDE, new_power_x, new_power_y)
+            c.POWER_UP_SIDE, new_power_x, new_power_y)
         self.__spawned_powers.append(new_power)
         self.__spawned_powers_count += 1
         self.__all_sprites_list.add(new_power)
 
+    def __apply_power_effect(self, power: str, player: int):
+        if player != -1:
+            if power == "up_speed_player":
+                self.__paddle_speeds[player - 1] *= c.SPEED_INCREASE
+            elif power == "down_speed_player":
+                self.__paddle_speeds[player - 1] *= c.SPEED_DECREASE
+
     def __start_game(self):
         score_1: int = 0
         score_2: int = 0
-        target_score: int = 10
+        target_score: int = 50
 
         power_cd: int = c.POWER_UP_CD - 1
         pygame.time.set_timer(pygame.USEREVENT, 1000)
@@ -82,13 +90,13 @@ class Game:
 
             pressed_keys = pygame.key.get_pressed()
             if pressed_keys[pygame.K_w]:
-                self.__paddle_1.move_up(c.PADDLE_SPEED)
+                self.__paddle_1.move_up(self.__paddle_speeds[0])
             if pressed_keys[pygame.K_s]:
-                self.__paddle_1.move_down(c.PADDLE_SPEED)
+                self.__paddle_1.move_down(self.__paddle_speeds[0])
             if pressed_keys[pygame.K_UP]:
-                self.__paddle_2.move_up(c.PADDLE_SPEED)
+                self.__paddle_2.move_up(self.__paddle_speeds[1])
             if pressed_keys[pygame.K_DOWN]:
-                self.__paddle_2.move_down(c.PADDLE_SPEED)
+                self.__paddle_2.move_down(self.__paddle_speeds[1])
 
             self.__all_sprites_list.update()
 
@@ -113,6 +121,13 @@ class Game:
             if hit_paddle_2:
                 self.__ball.bounce()
                 self.__ball.set_last_hit(2)
+
+            for power in self.__spawned_powers:
+                mask = pygame.sprite.collide_mask(self.__ball, power)
+                if mask:
+                    self.__apply_power_effect(
+                        power.get_effect(), self.__ball.get_last_hit())
+                    power.kill()
 
             self.__screen.fill(c.BLACK)
 

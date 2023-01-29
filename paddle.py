@@ -19,14 +19,14 @@ class Paddle(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect()
 
-    def move_up(self, pixels):
+    def move_up(self, pixels: float):
         """Method allowing for the paddles to move up."""
         self.rect.y -= pixels
 
         if self.rect.y < c.TOP_LINE_Y:
             self.rect.y = c.TOP_LINE_Y
 
-    def move_down(self, pixels):
+    def move_down(self, pixels: float):
         """Method allowing for the paddles to move down."""
         self.rect.y += pixels
 

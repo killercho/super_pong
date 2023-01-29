@@ -17,9 +17,7 @@ MIDDLE_LINES_STEP: int = int(SCREEN_SIZE[1] / MIDDLE_LINES_COUNT)
 PADDLE_LENGTH: int = 100
 PADDLE_WIDTH: int = 10
 
-POWER_UP_SIDE: int = 20
-POWER_UP_CD: int = 5
-POWER_OFFSET: int = 100
+
 
 TOP_LINE_Y: int = 100
 BOTTOM_LINE_Y: int = SCREEN_SIZE[1] - PADDLE_LENGTH
@@ -40,3 +38,11 @@ MENU_THEME = pygame_menu.themes.THEME_DARK
 DEFAULT_NAME_1: str = "Player 1"
 DEFAULT_NAME_2: str = "Player 2"
 MAX_NAME_SYMBOLS: int = 10
+
+# Power ups and their constants
+POWER_UP_SIDE: int = 20
+POWER_UP_CD: int = 5
+POWER_OFFSET: int = 100
+AVALIABLE_POWERS = ["up_speed_player", "down_speed_player"]
+SPEED_INCREASE: int = 1.5
+SPEED_DECREASE: int = 0.5
