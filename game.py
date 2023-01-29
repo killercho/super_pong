@@ -23,6 +23,7 @@ class Game:
         self.__spawned_powers_count = 0
 
         self.__paddle_speeds = [c.PADDLE_SPEED, c.PADDLE_SPEED]
+        self.__paddle_powers = [[], []]
 
         self.__paddle_1: Paddle = Paddle(
             c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
@@ -58,11 +59,12 @@ class Game:
         self.__all_sprites_list.add(new_power)
 
     def __apply_power_effect(self, power: str, player: int):
-        if player != -1:
+        if player != -1 and power not in self.__paddle_powers[player - 1]:
             if power == "up_speed_player":
                 self.__paddle_speeds[player - 1] *= c.SPEED_INCREASE
             elif power == "down_speed_player":
                 self.__paddle_speeds[player - 1] *= c.SPEED_DECREASE
+            self.__paddle_powers[player - 1].append(power)
 
     def __start_game(self):
         score_1: int = 0
