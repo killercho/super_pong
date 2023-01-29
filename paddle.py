@@ -9,6 +9,8 @@ class Paddle(pygame.sprite.Sprite):
     def __init__(self, color, width, height):
         super().__init__()
 
+        self.__powers = []
+
         self.image = pygame.Surface([width, height])
         self.image.fill(c.BLACK)
         self.image.set_colorkey(c.BLACK)

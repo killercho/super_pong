@@ -11,6 +11,9 @@ class Ball(pygame.sprite.Sprite):
     def __init__(self, color, radius):
         super().__init__()
 
+        self.__last_hit = -1
+        self.__powers = []
+
         self.image = pygame.Surface([2 * radius, 2 * radius])
         self.image.fill(c.BLACK)
 
@@ -31,6 +34,12 @@ class Ball(pygame.sprite.Sprite):
                                                 if self.velocity[0] < 0
                                                 else randint(-10, 0) / 100)
         self.velocity[1] = randint(-8, 8)
+
+    def get_last_hit(self):
+        return self.__last_hit
+
+    def set_last_hit(self, player: int):
+        self.__last_hit = player
 
     def set_coordinates(self, new_x, new_y):
         """Method implementing a way to set coordinates to the ball when needed."""

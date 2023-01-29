@@ -1,10 +1,12 @@
 """ Game class which operates the game. """
 
 import sys
+from random import randrange
 import pygame
 import constants as c
 from paddle import Paddle
 from ball import Ball
+from power_up import Power_Up
 
 pygame.init()
 
@@ -14,8 +16,11 @@ class Game:
 
     def __init__(self, screen, name_1_data, name_2_data):
         self.__screen = screen
-        self.__name_1 = name_1_data
-        self.__name_2 = name_2_data
+        self.__name_1: str = name_1_data
+        self.__name_2: str = name_2_data
+
+        self.__spawned_powers = []
+        self.__spawned_powers_count = 0
 
         self.__paddle_1: Paddle = Paddle(
             c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
@@ -39,11 +44,25 @@ class Game:
         self.__clock = pygame.time.Clock()
         self.__start_game()
 
+    def __spawn_random_power(self):
+        print("new power up should spawn")
+        new_power_x = randrange(
+            c.POWER_OFFSET, c.SCREEN_SIZE[0] - c.POWER_OFFSET)
+        new_power_y = randrange(
+            c.TOP_LINE_Y + c.POWER_OFFSET, c.SCREEN_SIZE[1] - c.POWER_OFFSET)
+        new_power: Power_Up = Power_Up(
+            "random power", c.POWER_UP_SIDE, new_power_x, new_power_y)
+        self.__spawned_powers.append(new_power)
+        self.__spawned_powers_count += 1
+        self.__all_sprites_list.add(new_power)
+
     def __start_game(self):
         score_1: int = 0
         score_2: int = 0
+        target_score: int = 10
 
-        target_score: int = 50
+        power_cd: int = c.POWER_UP_CD - 1
+        pygame.time.set_timer(pygame.USEREVENT, 1000)
 
         game_running: bool = True
         while game_running:
@@ -53,6 +72,13 @@ class Game:
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         game_running = False
+                elif event.type == pygame.USEREVENT:
+                    if power_cd > 0:
+                        power_cd -= 1
+                    else:
+                        self.__spawn_random_power()
+                        power_cd = c.POWER_UP_CD - 1
+                        pygame.time.set_timer(pygame.USEREVENT, 1000)
 
             pressed_keys = pygame.key.get_pressed()
             if pressed_keys[pygame.K_w]:
@@ -81,8 +107,12 @@ class Game:
                 self.__ball, self.__paddle_1)
             hit_paddle_2 = pygame.sprite.collide_mask(
                 self.__ball, self.__paddle_2)
-            if hit_paddle_1 or hit_paddle_2:
+            if hit_paddle_1:
                 self.__ball.bounce()
+                self.__ball.set_last_hit(1)
+            if hit_paddle_2:
+                self.__ball.bounce()
+                self.__ball.set_last_hit(2)
 
             self.__screen.fill(c.BLACK)
 
