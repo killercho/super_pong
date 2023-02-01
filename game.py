@@ -59,9 +59,17 @@ class Game:
             c.TOP_LINE_Y + c.POWER_OFFSET, c.SCREEN_SIZE[1] - c.POWER_OFFSET)
         new_power: Power_Up = Power_Up(
             c.POWER_UP_SIDE, new_power_x, new_power_y)
-        self.__spawned_powers.append(new_power)
+        self.__spawned_powers.append([new_power, c.ACTIVE_POWER_CD])
         self.__spawned_powers_count += 1
         self.__all_sprites_list.add(new_power)
+
+    def __clean_spawned_powers(self):
+        if self.__spawned_powers_count > 0:
+            for power_arr in self.__spawned_powers:
+                if power_arr[1] > 0:
+                    power_arr[1] -= 1
+                else:
+                    power_arr[0].kill()
 
     def __reverse_power(self, power: str, player: int):
         if player != -1:
@@ -71,7 +79,6 @@ class Game:
                 self.__paddle_speeds[player] = c.PADDLE_SPEED
 
     def __tick_active_powers(self):
-        print(f"tick is called + powers: {self.__paddle_powers}")
         for power_arr in self.__paddle_powers[0]:
             if(len(power_arr) == 0):
                 continue
@@ -101,6 +108,7 @@ class Game:
                 elif power == "down_speed_player":
                     self.__paddle_speeds[player - 1] *= c.SPEED_DECREASE
                 self.__paddle_powers[player - 1].append([power, c.SPEED_TIMER])
+                self.__spawned_powers_count -= 1
 
     def __handle_ball_movement(self):
         if self.__ball.get_ball_position()[0] >= c.SCREEN_SIZE[0] - c.BALL_RADIUS * 2:
@@ -126,7 +134,7 @@ class Game:
             self.__ball.bounce()
             self.__ball.set_last_hit(2)
 
-        for power in self.__spawned_powers:
+        for power in [arr[0] for arr in self.__spawned_powers]:
             mask = pygame.sprite.collide_mask(self.__ball, power)
             if mask:
                 self.__apply_power_effect(
@@ -184,6 +192,7 @@ class Game:
                         game_running = False
                 elif event.type == pygame.USEREVENT:
                     self.__tick_active_powers()
+                    self.__clean_spawned_powers()
                     if power_cd > 0:
                         power_cd -= 1
                     else:
