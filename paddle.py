@@ -6,6 +6,7 @@ import constants as c
 
 class Paddle(pygame.sprite.Sprite):
     """Paddle class implementing the logic behind the paddles in Pong."""
+
     def __init__(self, color, width, height):
         super().__init__()
 
@@ -30,6 +31,9 @@ class Paddle(pygame.sprite.Sprite):
 
         if self.rect.y > c.BOTTOM_LINE_Y:
             self.rect.y = c.BOTTOM_LINE_Y
+
+    def get_coordinates(self):
+        return (self.rect.x, self.rect.y)
 
     def set_coordinates(self, new_x, new_y):
         """Method implementing a way to set the coordinates of the paddle whenever needed."""

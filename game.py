@@ -105,9 +105,44 @@ class Game:
             if power not in all_powers:
                 if power == "up_speed_player":
                     self.__paddle_speeds[player - 1] *= c.SPEED_INCREASE
+                    self.__paddle_powers[player - 1].append([power, c.SPEED_TIMER])
                 elif power == "down_speed_player":
                     self.__paddle_speeds[player - 1] *= c.SPEED_DECREASE
-                self.__paddle_powers[player - 1].append([power, c.SPEED_TIMER])
+                    self.__paddle_powers[player - 1].append([power, c.SPEED_TIMER])
+                elif power == "increase_own_paddle":
+                    if player == 1:
+                        old_coord_x, old_coord_y = self.__paddle_1.get_coordinates()
+                        self.__paddle_1.kill()
+                        self.__paddle_1: Paddle = Paddle(
+                            c.WHITE, c.PADDLE_WIDTH, c.INCREASED_LENGHT)
+                        self.__paddle_1.set_coordinates(
+                            old_coord_x, old_coord_y)
+                        self.__all_sprites_list.add(self.__paddle_1)
+                    else:
+                        old_coord_x, old_coord_y = self.__paddle_2.get_coordinates()
+                        self.__paddle_2.kill()
+                        self.__paddle_2: Paddle = Paddle(
+                            c.WHITE, c.PADDLE_WIDTH, c.INCREASED_LENGHT)
+                        self.__paddle_2.set_coordinates(
+                            old_coord_x, old_coord_y)
+                        self.__all_sprites_list.add(self.__paddle_2)
+                elif power == "decrease_opponent_paddle":
+                    if player == 1:
+                        old_coord_x, old_coord_y = self.__paddle_2.get_coordinates()
+                        self.__paddle_2.kill()
+                        self.__paddle_2: Paddle = Paddle(
+                            c.WHITE, c.PADDLE_WIDTH, c.DECREASED_LENGHT)
+                        self.__paddle_2.set_coordinates(
+                            old_coord_x, old_coord_y)
+                        self.__all_sprites_list.add(self.__paddle_2)
+                    else:
+                        old_coord_x, old_coord_y = self.__paddle_1.get_coordinates()
+                        self.__paddle_1.kill()
+                        self.__paddle_1: Paddle = Paddle(
+                            c.WHITE, c.PADDLE_WIDTH, c.DECREASED_LENGHT)
+                        self.__paddle_1.set_coordinates(
+                            old_coord_x, old_coord_y)
+                        self.__all_sprites_list.add(self.__paddle_1)
                 self.__spawned_powers_count -= 1
 
     def __handle_ball_movement(self):
