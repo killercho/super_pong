@@ -27,8 +27,8 @@ class Game:
         self.__spawned_powers_count = 0
 
         self.__paddle_speeds = [c.PADDLE_SPEED, c.PADDLE_SPEED]
-        self.__paddle_powers = [[()], [()]]
-        self.__ball_powers = [()]
+        self.__paddle_powers = [[[]], [[]]]
+        self.__ball_powers = [[]]
 
         self.__paddle_1: Paddle = Paddle(
             c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
@@ -71,40 +71,36 @@ class Game:
                 self.__paddle_speeds[player] = c.PADDLE_SPEED
 
     def __tick_active_powers(self):
-        for power_tuple in self.__paddle_powers[0]:
-            if(len(power_tuple) == 0):
+        print(f"tick is called + powers: {self.__paddle_powers}")
+        for power_arr in self.__paddle_powers[0]:
+            if(len(power_arr) == 0):
                 continue
-            if power_tuple[1] <= 0:
-                self.__paddle_powers[0].remove(power_tuple)
-                self.__reverse_power(power_tuple[0], 0)
+            if power_arr[1] <= 0:
+                self.__paddle_powers[0].remove(power_arr)
+                self.__reverse_power(power_arr[0], 0)
                 continue
-            new_tuple = list(power_tuple)
-            new_tuple[1] -= 1
-            power_tuple = new_tuple
-        for power_tuple in self.__paddle_powers[1]:
-            if(len(power_tuple) == 0):
+            power_arr[1] -= 1
+        for power_arr in self.__paddle_powers[1]:
+            if(len(power_arr) == 0):
                 continue
-            if power_tuple[1] <= 0:
-                self.__paddle_powers[1].remove(power_tuple)
-                self.__reverse_power(power_tuple[0], 1)
+            if power_arr[1] <= 0:
+                self.__paddle_powers[1].remove(power_arr)
+                self.__reverse_power(power_arr[0], 1)
                 continue
-            new_tuple = list(power_tuple)
-            new_tuple[1] -= 1
-            power_tuple = new_tuple
+            power_arr[1] -= 1
 
     def __apply_power_effect(self, power: str, player: int):
-        print(self.__paddle_powers)
         if player != -1:
             all_powers = []
             if len(self.__paddle_powers[player - 1]) != 1:
-                all_powers = [tup[0] if len(tup) > 0 else ""
-                              for tup in self.__paddle_powers[player - 1]]
+                all_powers = [arr[0] if len(arr) > 0 else ""
+                              for arr in self.__paddle_powers[player - 1]]
             if power not in all_powers:
                 if power == "up_speed_player":
                     self.__paddle_speeds[player - 1] *= c.SPEED_INCREASE
                 elif power == "down_speed_player":
                     self.__paddle_speeds[player - 1] *= c.SPEED_DECREASE
-                self.__paddle_powers[player - 1].append((power, c.SPEED_TIMER))
+                self.__paddle_powers[player - 1].append([power, c.SPEED_TIMER])
 
     def __handle_ball_movement(self):
         if self.__ball.get_ball_position()[0] >= c.SCREEN_SIZE[0] - c.BALL_RADIUS * 2:
