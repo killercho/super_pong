@@ -12,7 +12,6 @@ class Ball(pygame.sprite.Sprite):
         super().__init__()
 
         self.__last_hit = -1
-        self.__powers = []
 
         self.image = pygame.Surface([2 * radius, 2 * radius])
         self.image.fill(c.BLACK)

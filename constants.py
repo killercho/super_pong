@@ -46,3 +46,4 @@ POWER_OFFSET: int = 100
 AVALIABLE_POWERS = ["up_speed_player", "down_speed_player"]
 SPEED_INCREASE: int = 1.5
 SPEED_DECREASE: int = 0.5
+SPEED_TIMER: int = 7.5

@@ -19,11 +19,16 @@ class Game:
         self.__name_1: str = name_1_data
         self.__name_2: str = name_2_data
 
+        self.__score_1: int = 0
+        self.__score_2: int = 0
+        self.__target_score: int = 50
+
         self.__spawned_powers = []
         self.__spawned_powers_count = 0
 
         self.__paddle_speeds = [c.PADDLE_SPEED, c.PADDLE_SPEED]
-        self.__paddle_powers = [[], []]
+        self.__paddle_powers = [[()], [()]]
+        self.__ball_powers = [()]
 
         self.__paddle_1: Paddle = Paddle(
             c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
@@ -58,19 +63,118 @@ class Game:
         self.__spawned_powers_count += 1
         self.__all_sprites_list.add(new_power)
 
-    def __apply_power_effect(self, power: str, player: int):
-        if player != -1 and power not in self.__paddle_powers[player - 1]:
+    def __reverse_power(self, power: str, player: int):
+        if player != -1:
             if power == "up_speed_player":
-                self.__paddle_speeds[player - 1] *= c.SPEED_INCREASE
+                self.__paddle_speeds[player] = c.PADDLE_SPEED
             elif power == "down_speed_player":
-                self.__paddle_speeds[player - 1] *= c.SPEED_DECREASE
-            self.__paddle_powers[player - 1].append(power)
+                self.__paddle_speeds[player] = c.PADDLE_SPEED
+
+    def __tick_active_powers(self):
+        for power_tuple in self.__paddle_powers[0]:
+            if(len(power_tuple) == 0):
+                continue
+            if power_tuple[1] <= 0:
+                self.__paddle_powers[0].remove(power_tuple)
+                self.__reverse_power(power_tuple[0], 0)
+                continue
+            new_tuple = list(power_tuple)
+            new_tuple[1] -= 1
+            power_tuple = new_tuple
+        for power_tuple in self.__paddle_powers[1]:
+            if(len(power_tuple) == 0):
+                continue
+            if power_tuple[1] <= 0:
+                self.__paddle_powers[1].remove(power_tuple)
+                self.__reverse_power(power_tuple[0], 1)
+                continue
+            new_tuple = list(power_tuple)
+            new_tuple[1] -= 1
+            power_tuple = new_tuple
+
+    def __apply_power_effect(self, power: str, player: int):
+        print(self.__paddle_powers)
+        if player != -1:
+            all_powers = []
+            if len(self.__paddle_powers[player - 1]) != 1:
+                all_powers = [tup[0] if len(tup) > 0 else ""
+                              for tup in self.__paddle_powers[player - 1]]
+            if power not in all_powers:
+                if power == "up_speed_player":
+                    self.__paddle_speeds[player - 1] *= c.SPEED_INCREASE
+                elif power == "down_speed_player":
+                    self.__paddle_speeds[player - 1] *= c.SPEED_DECREASE
+                self.__paddle_powers[player - 1].append((power, c.SPEED_TIMER))
+
+    def __handle_ball_movement(self):
+        if self.__ball.get_ball_position()[0] >= c.SCREEN_SIZE[0] - c.BALL_RADIUS * 2:
+            self.__score_1 += 1
+            self.__ball.reverse_velocity_x()
+        elif self.__ball.get_ball_position()[0] <= 0:
+            self.__score_2 += 1
+            self.__ball.reverse_velocity_x()
+        if self.__ball.get_ball_position()[1] < c.TOP_LINE_Y + 5:
+            self.__ball.reverse_velocity_y()
+        elif self.__ball.get_ball_position()[1] >= c.SCREEN_SIZE[1] - c.BALL_RADIUS * 2:
+            self.__ball.reverse_velocity_y()
+
+    def __handle_collision(self):
+        hit_paddle_1 = pygame.sprite.collide_mask(
+            self.__ball, self.__paddle_1)
+        hit_paddle_2 = pygame.sprite.collide_mask(
+            self.__ball, self.__paddle_2)
+        if hit_paddle_1:
+            self.__ball.bounce()
+            self.__ball.set_last_hit(1)
+        if hit_paddle_2:
+            self.__ball.bounce()
+            self.__ball.set_last_hit(2)
+
+        for power in self.__spawned_powers:
+            mask = pygame.sprite.collide_mask(self.__ball, power)
+            if mask:
+                self.__apply_power_effect(
+                    power.get_effect(), self.__ball.get_last_hit())
+                power.kill()
+
+    def __handle_input(self):
+        pressed_keys = pygame.key.get_pressed()
+        if pressed_keys[pygame.K_w]:
+            self.__paddle_1.move_up(self.__paddle_speeds[0])
+        if pressed_keys[pygame.K_s]:
+            self.__paddle_1.move_down(self.__paddle_speeds[0])
+        if pressed_keys[pygame.K_UP]:
+            self.__paddle_2.move_up(self.__paddle_speeds[1])
+        if pressed_keys[pygame.K_DOWN]:
+            self.__paddle_2.move_down(self.__paddle_speeds[1])
+
+    def __create_middle_line(self):
+        for i in range(0, c.SCREEN_SIZE[1], c.MIDDLE_LINES_STEP):
+            vertical_line_size = (c.LINES_WIDTH, 64)
+            vertical_line = pygame.Surface(
+                vertical_line_size, pygame.SRCALPHA)
+            vertical_line.fill((255, 255, 255, 70))
+            self.__screen.blit(vertical_line, (636, i))
+
+        pygame.draw.line(self.__screen, c.WHITE, [0, c.TOP_LINE_Y],
+                         [c.SCREEN_SIZE[0], c.TOP_LINE_Y], c.LINES_WIDTH)
+        pygame.draw.line(self.__screen, c.WHITE, [639, 0], [639, 100],
+                         c.LINES_WIDTH)
+
+    def __render_top_info(self):
+        text = self.__INGAME_TEXT_FONT.render(
+            str(self.__score_1), 1, c.WHITE)
+        self.__screen.blit(text, (532, 20))
+        text = self.__INGAME_TEXT_FONT.render(
+            str(self.__score_2), 1, c.WHITE)
+        self.__screen.blit(text, (722, 20))
+
+        text = self.__INGAME_TEXT_FONT.render(self.__name_1, 1, c.WHITE)
+        self.__screen.blit(text, (100, 20))
+        text = self.__INGAME_TEXT_FONT.render(self.__name_2, 1, c.WHITE)
+        self.__screen.blit(text, (854, 20))
 
     def __start_game(self):
-        score_1: int = 0
-        score_2: int = 0
-        target_score: int = 50
-
         power_cd: int = c.POWER_UP_CD - 1
         pygame.time.set_timer(pygame.USEREVENT, 1000)
 
@@ -83,84 +187,28 @@ class Game:
                     if event.key == pygame.K_ESCAPE:
                         game_running = False
                 elif event.type == pygame.USEREVENT:
+                    self.__tick_active_powers()
                     if power_cd > 0:
                         power_cd -= 1
                     else:
                         self.__spawn_random_power()
                         power_cd = c.POWER_UP_CD - 1
-                        pygame.time.set_timer(pygame.USEREVENT, 1000)
 
-            pressed_keys = pygame.key.get_pressed()
-            if pressed_keys[pygame.K_w]:
-                self.__paddle_1.move_up(self.__paddle_speeds[0])
-            if pressed_keys[pygame.K_s]:
-                self.__paddle_1.move_down(self.__paddle_speeds[0])
-            if pressed_keys[pygame.K_UP]:
-                self.__paddle_2.move_up(self.__paddle_speeds[1])
-            if pressed_keys[pygame.K_DOWN]:
-                self.__paddle_2.move_down(self.__paddle_speeds[1])
+            self.__handle_input()
+            self.__handle_ball_movement()
+            self.__handle_collision()
 
             self.__all_sprites_list.update()
-
-            if self.__ball.get_ball_position()[0] >= c.SCREEN_SIZE[0] - c.BALL_RADIUS * 2:
-                score_1 += 1
-                self.__ball.reverse_velocity_x()
-            elif self.__ball.get_ball_position()[0] <= 0:
-                score_2 += 1
-                self.__ball.reverse_velocity_x()
-            if self.__ball.get_ball_position()[1] < c.TOP_LINE_Y + 5:
-                self.__ball.reverse_velocity_y()
-            elif self.__ball.get_ball_position()[1] >= c.SCREEN_SIZE[1] - c.BALL_RADIUS * 2:
-                self.__ball.reverse_velocity_y()
-
-            hit_paddle_1 = pygame.sprite.collide_mask(
-                self.__ball, self.__paddle_1)
-            hit_paddle_2 = pygame.sprite.collide_mask(
-                self.__ball, self.__paddle_2)
-            if hit_paddle_1:
-                self.__ball.bounce()
-                self.__ball.set_last_hit(1)
-            if hit_paddle_2:
-                self.__ball.bounce()
-                self.__ball.set_last_hit(2)
-
-            for power in self.__spawned_powers:
-                mask = pygame.sprite.collide_mask(self.__ball, power)
-                if mask:
-                    self.__apply_power_effect(
-                        power.get_effect(), self.__ball.get_last_hit())
-                    power.kill()
-
             self.__screen.fill(c.BLACK)
-
             self.__all_sprites_list.draw(self.__screen)
 
             # creating punctured line
-            for i in range(0, c.SCREEN_SIZE[1], c.MIDDLE_LINES_STEP):
-                vertical_line_size = (c.LINES_WIDTH, 64)
-                vertical_line = pygame.Surface(
-                    vertical_line_size, pygame.SRCALPHA)
-                vertical_line.fill((255, 255, 255, 70))
-                self.__screen.blit(vertical_line, (636, i))
-
-            pygame.draw.line(self.__screen, c.WHITE, [0, c.TOP_LINE_Y],
-                             [c.SCREEN_SIZE[0], c.TOP_LINE_Y], c.LINES_WIDTH)
-            pygame.draw.line(self.__screen, c.WHITE, [639, 0], [639, 100],
-                             c.LINES_WIDTH)
-
-            text = self.__INGAME_TEXT_FONT.render(str(score_1), 1, c.WHITE)
-            self.__screen.blit(text, (532, 20))
-            text = self.__INGAME_TEXT_FONT.render(str(score_2), 1, c.WHITE)
-            self.__screen.blit(text, (722, 20))
-
-            text = self.__INGAME_TEXT_FONT.render(self.__name_1, 1, c.WHITE)
-            self.__screen.blit(text, (100, 20))
-            text = self.__INGAME_TEXT_FONT.render(self.__name_2, 1, c.WHITE)
-            self.__screen.blit(text, (854, 20))
+            self.__create_middle_line()
+            self.__render_top_info()
 
             pygame.display.flip()
 
-            if score_1 >= target_score or score_2 >= target_score:
+            if self.__score_1 >= self.__target_score or self.__score_2 >= self.__target_score:
                 game_running = False
 
             self.__clock.tick(60)
