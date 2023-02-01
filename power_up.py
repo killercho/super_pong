@@ -1,5 +1,6 @@
 """ Power up file holding the main logic of a power up."""
 
+import os
 import pygame
 from random import randrange
 import constants as c
@@ -13,11 +14,8 @@ class Power_Up(pygame.sprite.Sprite):
 
         self.__power = self.__get_random_power()
 
-        self.image = pygame.Surface([side_lenght, side_lenght])
-        self.image.fill(c.BLACK)
-        self.image.set_colorkey(c.BLACK)
-
-        pygame.draw.rect(self.image, c.WHITE, [0, 0, side_lenght, side_lenght])
+        self.image = pygame.image.load(
+            os.path.join("assets", f"{self.__power}.png"))
 
         self.rect = self.image.get_rect()
         self.rect.x = spawn_x
