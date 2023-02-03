@@ -2,6 +2,7 @@
 
 import sys
 from random import randrange
+from time import sleep
 import pygame
 import constants as c
 from paddle import Paddle
@@ -22,6 +23,7 @@ class Game:
         self.__score_1: int = 0
         self.__score_2: int = 0
         self.__target_score: int = 50
+        self.__score_break: int = 0
 
         self.__spawned_powers = []
         self.__spawned_powers_count = 0
@@ -32,15 +34,14 @@ class Game:
 
         self.__paddle_1: Paddle = Paddle(
             c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
-        self.__paddle_1.set_coordinates(c.A_PADDLE_X, c.A_PADDLE_Y)
+        self.__paddle_1.set_coordinates(c.PADDLE_1_X, c.PADDLE_1_Y)
 
         self.__paddle_2: Paddle = Paddle(
             c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
-        self.__paddle_2.set_coordinates(c.B_PADDLE_X, c.B_PADDLE_Y)
+        self.__paddle_2.set_coordinates(c.PADDLE_2_X, c.PADDLE_2_Y)
 
         self.__ball: Ball = Ball(c.WHITE, c.BALL_RADIUS)
-        self.__ball.set_coordinates(c.SCREEN_SIZE[0] / 2 - 5,
-                                    (c.SCREEN_SIZE[1] + c.TOP_LINE_Y / 2) / 2)
+        self.__ball.set_coordinates(c.BALL_X, c.BALL_Y)
 
         self.__all_sprites_list = pygame.sprite.Group()
         self.__all_sprites_list.add(self.__paddle_1)
@@ -80,6 +81,10 @@ class Game:
                 else:
                     power_arr[0].kill()
 
+    def __clean_all_spanwed_powers(self):
+        for power_arr in self.__spawned_powers:
+            power_arr[0].kill()
+
     def __reverse_power(self, power: str, player: int):
         if player != -1:
             if power == "up_speed_player":
@@ -100,6 +105,20 @@ class Game:
                 else:
                     self.__paddle_2 = self.__create_new_paddle(
                         self.__paddle_2, c.PADDLE_LENGTH)
+
+    def __reverse_all_powers(self):
+        for power_arr in self.__paddle_powers[0]:
+            if(len(power_arr) == 0):
+                continue
+            self.__paddle_powers[0].remove(power_arr)
+            self.__reverse_power(power_arr[0], 0)
+        for power_arr in self.__paddle_powers[1]:
+            if(len(power_arr) == 0):
+                continue
+            self.__paddle_powers[1].remove(power_arr)
+            self.__reverse_power(power_arr[0], 1)
+        for power_arr in self.__ball_powers:
+            pass
 
     def __tick_active_powers(self):
         for power_arr in self.__paddle_powers[0]:
@@ -160,13 +179,22 @@ class Game:
                             [power, c.PADDLE_SIZE_TIMER])
                 self.__spawned_powers_count -= 1
 
+    def __apply_score_break(self):
+        self.__clean_all_spanwed_powers()
+        self.__reverse_all_powers()
+        self.__paddle_1.set_coordinates(c.PADDLE_1_X, c.PADDLE_1_Y)
+        self.__paddle_2.set_coordinates(c.PADDLE_2_X, c.PADDLE_2_Y)
+        self.__ball.reset_ball()
+
     def __handle_ball_movement(self):
         if self.__ball.get_ball_position()[0] >= c.SCREEN_SIZE[0] - c.BALL_RADIUS * 2:
             self.__score_1 += 1
-            self.__ball.reverse_velocity_x()
+            self.__score_break = c.GAME_BREAK_AFTER_POINT
+            self.__apply_score_break()
         elif self.__ball.get_ball_position()[0] <= 0:
             self.__score_2 += 1
-            self.__ball.reverse_velocity_x()
+            self.__score_break = c.GAME_BREAK_AFTER_POINT
+            self.__apply_score_break()
         if self.__ball.get_ball_position()[1] < c.TOP_LINE_Y + 5:
             self.__ball.reverse_velocity_y()
         elif self.__ball.get_ball_position()[1] >= c.SCREEN_SIZE[1] - c.BALL_RADIUS * 2:
@@ -229,7 +257,7 @@ class Game:
         self.__screen.blit(text, (854, 20))
 
     def __start_game(self):
-        power_cd: int = c.POWER_UP_CD - 1
+        power_cd: int = c.POWER_UP_CD
         pygame.time.set_timer(pygame.USEREVENT, 1000)
 
         game_running: bool = True
@@ -241,19 +269,23 @@ class Game:
                     if event.key == pygame.K_ESCAPE:
                         game_running = False
                 elif event.type == pygame.USEREVENT:
-                    self.__tick_active_powers()
-                    self.__clean_spawned_powers()
-                    if power_cd > 0:
-                        power_cd -= 1
+                    if self.__score_break > 0:
+                        self.__score_break -= 1
                     else:
-                        self.__spawn_random_power()
-                        power_cd = c.POWER_UP_CD - 1
+                        self.__tick_active_powers()
+                        self.__clean_spawned_powers()
+                        if power_cd > 0:
+                            power_cd -= 1
+                        else:
+                            self.__spawn_random_power()
+                            power_cd = c.POWER_UP_CD - 1
 
-            self.__handle_input()
-            self.__handle_ball_movement()
-            self.__handle_collision()
+            if self.__score_break <= 0:
+                self.__handle_input()
+                self.__handle_ball_movement()
+                self.__handle_collision()
+                self.__all_sprites_list.update()
 
-            self.__all_sprites_list.update()
             self.__screen.fill(c.BLACK)
             self.__all_sprites_list.draw(self.__screen)
 
