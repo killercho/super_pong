@@ -34,12 +34,11 @@ class Ball(pygame.sprite.Sprite):
         self.rect.x += self.velocity[0]
         self.rect.y += self.velocity[1]
 
-    def bounce(self):
+    def bounce(self, additional_velocity):
         """Method implementing the bounce of the ball."""
-        self.velocity[0] = -self.velocity[0] + (randint(0, 10) / 100
-                                                if self.velocity[0] < 0
-                                                else randint(-10, 0) / 100)
-        self.velocity[1] = randint(-8, 8)
+        more_speed = randint(0, 2) if self.velocity[0] < 0 else randint(-2, 0)
+        self.velocity[0] = -self.velocity[0] + more_speed
+        self.velocity[1] = -additional_velocity + randint(0, 4)
 
     def get_last_hit(self):
         return self.__last_hit

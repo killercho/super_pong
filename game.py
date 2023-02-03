@@ -28,6 +28,7 @@ class Game:
         self.__spawned_powers = []
         self.__spawned_powers_count = 0
 
+        self.__paddle_velocities = [0, 0]
         self.__paddle_speeds = [c.PADDLE_SPEED, c.PADDLE_SPEED]
         self.__paddle_powers = [[[]], [[]]]
         self.__ball_powers = [[]]
@@ -206,10 +207,10 @@ class Game:
         hit_paddle_2 = pygame.sprite.collide_mask(
             self.__ball, self.__paddle_2)
         if hit_paddle_1:
-            self.__ball.bounce()
+            self.__ball.bounce(self.__paddle_velocities[0])
             self.__ball.set_last_hit(1)
         if hit_paddle_2:
-            self.__ball.bounce()
+            self.__ball.bounce(self.__paddle_velocities[1])
             self.__ball.set_last_hit(2)
 
         for power in [arr[0] for arr in self.__spawned_powers]:
@@ -223,12 +224,20 @@ class Game:
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[pygame.K_w]:
             self.__paddle_1.move_up(self.__paddle_speeds[0])
-        if pressed_keys[pygame.K_s]:
+            self.__paddle_velocities[0] = self.__paddle_speeds[0]
+        elif pressed_keys[pygame.K_s]:
             self.__paddle_1.move_down(self.__paddle_speeds[0])
+            self.__paddle_velocities[0] = self.__paddle_speeds[0]
+        else:
+            self.__paddle_velocities[0] = 0
         if pressed_keys[pygame.K_UP]:
             self.__paddle_2.move_up(self.__paddle_speeds[1])
-        if pressed_keys[pygame.K_DOWN]:
+            self.__paddle_velocities[1] = self.__paddle_speeds[1]
+        elif pressed_keys[pygame.K_DOWN]:
             self.__paddle_2.move_down(self.__paddle_speeds[1])
+            self.__paddle_velocities[1] = self.__paddle_speeds[1]
+        else:
+            self.__paddle_velocities[1] = 0
 
     def __create_middle_line(self):
         for i in range(0, c.SCREEN_SIZE[1], c.MIDDLE_LINES_STEP):
