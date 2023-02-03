@@ -68,11 +68,11 @@ class Game:
     def __create_new_paddle(self, paddle: Paddle, new_length: int) -> Paddle:
         old_x, old_y = paddle.get_coordinates()
         paddle.kill()
-        paddle = Paddle(
+        new_paddle: Paddle = Paddle(
             c.WHITE, c.PADDLE_WIDTH, new_length)
-        paddle.set_coordinates(old_x, old_y)
-        self.__all_sprites_list.add(paddle)
-        return paddle
+        new_paddle.set_coordinates(old_x, old_y)
+        self.__all_sprites_list.add(new_paddle)
+        return new_paddle
 
     def __clean_spawned_powers(self):
         if self.__spawned_powers_count > 0:
@@ -108,18 +108,11 @@ class Game:
                         self.__paddle_2, c.PADDLE_LENGTH)
 
     def __reverse_all_powers(self):
-        for power_arr in self.__paddle_powers[0]:
-            if(len(power_arr) == 0):
-                continue
-            self.__paddle_powers[0].remove(power_arr)
-            self.__reverse_power(power_arr[0], 0)
-        for power_arr in self.__paddle_powers[1]:
-            if(len(power_arr) == 0):
-                continue
-            self.__paddle_powers[1].remove(power_arr)
-            self.__reverse_power(power_arr[0], 1)
-        for power_arr in self.__ball_powers:
-            pass
+        self.__paddle_speeds = [c.PADDLE_SPEED, c.PADDLE_SPEED]
+        self.__paddle_1 = self.__create_new_paddle(
+            self.__paddle_1, c.PADDLE_LENGTH)
+        self.__paddle_2 = self.__create_new_paddle(
+            self.__paddle_2, c.PADDLE_LENGTH)
 
     def __tick_active_powers(self):
         for power_arr in self.__paddle_powers[0]:
@@ -279,6 +272,7 @@ class Game:
                         game_running = False
                 elif event.type == pygame.USEREVENT:
                     if self.__score_break > 0:
+                        self.__apply_score_break()
                         self.__score_break -= 1
                     else:
                         self.__tick_active_powers()

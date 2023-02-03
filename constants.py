@@ -44,16 +44,18 @@ MAX_NAME_SYMBOLS: int = 10
 
 # Power ups and their constants
 POWER_UP_SIDE: int = 20
-POWER_UP_CD: float = 3  # was 5
+POWER_UP_CD: float = 3
 POWER_OFFSET: int = 100
 ACTIVE_POWER_CD: float = 3
 AVALIABLE_POWERS = ["up_speed_player",
                     "down_speed_player",
                     "increase_own_paddle",
                     "decrease_opponent_paddle"]
+
 SPEED_INCREASE: float = 1.5
 SPEED_DECREASE: float = 0.5
 SPEED_TIMER: float = 6.5
-PADDLE_SIZE_TIMER: float = 2  # was 5
+
+PADDLE_SIZE_TIMER: float = 1
 INCREASED_LENGHT: float = 1.5 * PADDLE_LENGTH
 DECREASED_LENGHT: float = 0.5 * PADDLE_LENGTH
