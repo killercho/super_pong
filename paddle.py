@@ -10,6 +10,8 @@ class Paddle(pygame.sprite.Sprite):
     def __init__(self, color, width, height):
         super().__init__()
 
+        self.__height = height
+
         self.image = pygame.Surface([width, height])
         self.image.fill(c.BLACK)
         self.image.set_colorkey(c.BLACK)
@@ -29,8 +31,14 @@ class Paddle(pygame.sprite.Sprite):
         """Method allowing for the paddles to move down."""
         self.rect.y += pixels
 
-        if self.rect.y > c.BOTTOM_LINE_Y:
-            self.rect.y = c.BOTTOM_LINE_Y
+        bottom_correction: int = 0
+        if self.__height > c.PADDLE_LENGTH:
+            bottom_correction = -(c.INCREASED_LENGHT - c.PADDLE_LENGTH)
+        elif self.__height < c.PADDLE_LENGTH:
+            bottom_correction = c.DECREASED_LENGHT
+
+        if self.rect.y > c.BOTTOM_LINE_Y + bottom_correction:
+            self.rect.y = c.BOTTOM_LINE_Y + bottom_correction
 
     def get_coordinates(self):
         return (self.rect.x, self.rect.y)

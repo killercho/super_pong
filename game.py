@@ -63,6 +63,15 @@ class Game:
         self.__spawned_powers_count += 1
         self.__all_sprites_list.add(new_power)
 
+    def __create_new_paddle(self, paddle: Paddle, new_length: int) -> Paddle:
+        old_x, old_y = paddle.get_coordinates()
+        paddle.kill()
+        paddle = Paddle(
+            c.WHITE, c.PADDLE_WIDTH, new_length)
+        paddle.set_coordinates(old_x, old_y)
+        self.__all_sprites_list.add(paddle)
+        return paddle
+
     def __clean_spawned_powers(self):
         if self.__spawned_powers_count > 0:
             for power_arr in self.__spawned_powers:
@@ -77,6 +86,20 @@ class Game:
                 self.__paddle_speeds[player] = c.PADDLE_SPEED
             elif power == "down_speed_player":
                 self.__paddle_speeds[player] = c.PADDLE_SPEED
+            elif power == "increase_own_paddle":
+                if player == 1:
+                    self.__paddle_1 = self.__create_new_paddle(
+                        self.__paddle_1, c.PADDLE_LENGTH)
+                else:
+                    self.__paddle_2 = self.__create_new_paddle(
+                        self.__paddle_2, c.PADDLE_LENGTH)
+            elif power == "decrease_opponent_paddle":
+                if player == 1:
+                    self.__paddle_1 = self.__create_new_paddle(
+                        self.__paddle_1, c.PADDLE_LENGTH)
+                else:
+                    self.__paddle_2 = self.__create_new_paddle(
+                        self.__paddle_2, c.PADDLE_LENGTH)
 
     def __tick_active_powers(self):
         for power_arr in self.__paddle_powers[0]:
@@ -95,6 +118,8 @@ class Game:
                 self.__reverse_power(power_arr[0], 1)
                 continue
             power_arr[1] -= 1
+        for power_arr in self.__ball_powers:
+            pass
 
     def __apply_power_effect(self, power: str, player: int):
         if player != -1:
@@ -105,44 +130,34 @@ class Game:
             if power not in all_powers:
                 if power == "up_speed_player":
                     self.__paddle_speeds[player - 1] *= c.SPEED_INCREASE
-                    self.__paddle_powers[player - 1].append([power, c.SPEED_TIMER])
+                    self.__paddle_powers[player -
+                                         1].append([power, c.SPEED_TIMER])
                 elif power == "down_speed_player":
                     self.__paddle_speeds[player - 1] *= c.SPEED_DECREASE
-                    self.__paddle_powers[player - 1].append([power, c.SPEED_TIMER])
+                    self.__paddle_powers[player -
+                                         1].append([power, c.SPEED_TIMER])
                 elif power == "increase_own_paddle":
                     if player == 1:
-                        old_coord_x, old_coord_y = self.__paddle_1.get_coordinates()
-                        self.__paddle_1.kill()
-                        self.__paddle_1: Paddle = Paddle(
-                            c.WHITE, c.PADDLE_WIDTH, c.INCREASED_LENGHT)
-                        self.__paddle_1.set_coordinates(
-                            old_coord_x, old_coord_y)
-                        self.__all_sprites_list.add(self.__paddle_1)
+                        self.__paddle_1 = self.__create_new_paddle(
+                            self.__paddle_1, c.INCREASED_LENGHT)
+                        self.__paddle_powers[0].append(
+                            [power, c.PADDLE_SIZE_TIMER])
                     else:
-                        old_coord_x, old_coord_y = self.__paddle_2.get_coordinates()
-                        self.__paddle_2.kill()
-                        self.__paddle_2: Paddle = Paddle(
-                            c.WHITE, c.PADDLE_WIDTH, c.INCREASED_LENGHT)
-                        self.__paddle_2.set_coordinates(
-                            old_coord_x, old_coord_y)
-                        self.__all_sprites_list.add(self.__paddle_2)
+                        self.__paddle_2 = self.__create_new_paddle(
+                            self.__paddle_2, c.INCREASED_LENGHT)
+                        self.__paddle_powers[1].append(
+                            [power, c.PADDLE_SIZE_TIMER])
                 elif power == "decrease_opponent_paddle":
                     if player == 1:
-                        old_coord_x, old_coord_y = self.__paddle_2.get_coordinates()
-                        self.__paddle_2.kill()
-                        self.__paddle_2: Paddle = Paddle(
-                            c.WHITE, c.PADDLE_WIDTH, c.DECREASED_LENGHT)
-                        self.__paddle_2.set_coordinates(
-                            old_coord_x, old_coord_y)
-                        self.__all_sprites_list.add(self.__paddle_2)
+                        self.__paddle_2 = self.__create_new_paddle(
+                            self.__paddle_2, c.DECREASED_LENGHT)
+                        self.__paddle_powers[1].append(
+                            [power, c.PADDLE_SIZE_TIMER])
                     else:
-                        old_coord_x, old_coord_y = self.__paddle_1.get_coordinates()
-                        self.__paddle_1.kill()
-                        self.__paddle_1: Paddle = Paddle(
-                            c.WHITE, c.PADDLE_WIDTH, c.DECREASED_LENGHT)
-                        self.__paddle_1.set_coordinates(
-                            old_coord_x, old_coord_y)
-                        self.__all_sprites_list.add(self.__paddle_1)
+                        self.__paddle_1 = self.__create_new_paddle(
+                            self.__paddle_1, c.DECREASED_LENGHT)
+                        self.__paddle_powers[0].append(
+                            [power, c.PADDLE_SIZE_TIMER])
                 self.__spawned_powers_count -= 1
 
     def __handle_ball_movement(self):
