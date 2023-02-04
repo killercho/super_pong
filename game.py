@@ -225,6 +225,12 @@ class Game:
         pygame.draw.line(self.__screen, c.WHITE, [639, 0], [639, 100],
                          c.LINES_WIDTH)
 
+    def __render_break_timer(self, timer: int):
+        font = pygame.font.Font(None, 200)
+        text = font.render(str(timer), 1, c.WHITE)
+        self.__screen.blit(
+            text, (c.SCREEN_SIZE[0] / 2 - 35, c.SCREEN_SIZE[1] / 2 - 35))
+
     def __render_top_info(self):
         text = self.__INGAME_TEXT_FONT.render(
             str(self.__score_1), 1, c.WHITE)
@@ -275,6 +281,8 @@ class Game:
             # creating punctured line
             self.__create_middle_line()
             self.__render_top_info()
+            if self.__score_break > 0:
+                self.__render_break_timer(self.__score_break)
 
             pygame.display.flip()
 
