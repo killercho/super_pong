@@ -18,14 +18,20 @@ class Ball(pygame.sprite.Sprite):
 
         pygame.draw.circle(self.image, color, (radius, radius), radius)
 
-        self.velocity = [randint(4, 8), randint(-8, 8)]
+        random_speed_x = randint(-8, 8)
+        while -2 < random_speed_x < 2:
+            random_speed_x = randint(-8, 8)
+        self.velocity = [random_speed_x, randint(-8, 8)]
 
         self.rect = self.image.get_rect()
 
     def reset_ball(self):
         """Method giving the ball a new random velocity, used after the break 
             because of a score."""
-        self.velocity = [randint(4, 8), randint(-8, 8)]
+        random_speed_x = randint(-8, 8)
+        while -2 < random_speed_x < 2:
+            random_speed_x = randint(-8, 8)
+        self.velocity = [random_speed_x, randint(-8, 8)]
         self.__last_hit = -1
         self.set_coordinates(c.BALL_X, c.BALL_Y)
 
