@@ -9,20 +9,20 @@ import constants as c
 class Menu:
     """ Main menu class with declarations for all other menus. """
 
-    def __init__(self):
-        self.__screen = pygame.display.set_mode(c.SCREEN_SIZE)
+    def __init__(self) -> None:
+        self.__screen: pygame.Surface = pygame.display.set_mode(c.SCREEN_SIZE)
         pygame.display.set_caption("Super Pong")
 
         # Menu declarations:
-        self.__main_menu = pygame_menu.Menu("Super Pong", c.SCREEN_SIZE[0], c.SCREEN_SIZE[1],
-                                            theme=c.MENU_THEME)
-        self.__start_menu = pygame_menu.Menu("Game settings", c.SCREEN_SIZE[0],
-                                             c.SCREEN_SIZE[1], theme=c.MENU_THEME)
-        self.__options_menu = pygame_menu.Menu("Options", c.SCREEN_SIZE[0], c.SCREEN_SIZE[1],
-                                               theme=c.MENU_THEME)
-        self.__game_id_menu = pygame_menu.Menu(
+        self.__main_menu: pygame_menu.Menu = pygame_menu.Menu("Super Pong", c.SCREEN_SIZE[0], c.SCREEN_SIZE[1],
+                                                              theme=c.MENU_THEME)
+        self.__start_menu: pygame_menu.Menu = pygame_menu.Menu("Game settings", c.SCREEN_SIZE[0],
+                                                               c.SCREEN_SIZE[1], theme=c.MENU_THEME)
+        self.__options_menu: pygame_menu.Menu = pygame_menu.Menu("Options", c.SCREEN_SIZE[0], c.SCREEN_SIZE[1],
+                                                                 theme=c.MENU_THEME)
+        self.__game_id_menu: pygame_menu.Menu = pygame_menu.Menu(
             "Game Id", c.SCREEN_SIZE[0] // 2, c.SCREEN_SIZE[1] // 2, theme=c.MENU_THEME)
-        self.__game_joined_menu = pygame_menu.Menu(
+        self.__game_joined_menu: pygame_menu.Menu = pygame_menu.Menu(
             "Game lobby", c.SCREEN_SIZE[0], c.SCREEN_SIZE[1], theme=c.MENU_THEME)
 
         # Main menu:
@@ -55,12 +55,12 @@ class Menu:
 
         self.__main_menu.mainloop(self.__screen)
 
-    def __player_ready(self):
+    def __player_ready(self) -> None:
         pass
 
-    def __join_game(self):
+    def __join_game(self) -> None:
         self.__game_id_label.set_title(self.__game_id.get_value())
         self.__main_menu._open(self.__game_joined_menu)
 
-    def __start_game(self):
+    def __start_game(self) -> Game:
         return Game(self.__screen, self.__name_input.get_value(), c.DEFAULT_NAME_2)

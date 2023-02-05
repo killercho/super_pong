@@ -3,7 +3,7 @@
 from main_menu import Menu
 
 
-def run_game():
+def run_game() -> Menu:
     """Returns a menu object from which the game can be started."""
     return Menu()
 

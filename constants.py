@@ -2,15 +2,15 @@
 
 import pygame_menu
 
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-WHITE = (255, 255, 255)
+BLACK: tuple = (0, 0, 0)
+RED: tuple = (255, 0, 0)
+GREEN: tuple = (0, 255, 0)
+BLUE: tuple = (0, 0, 255)
+WHITE: tuple = (255, 255, 255)
 
-SCREEN_SIZE = (1280, 720)
+SCREEN_SIZE: tuple = (1280, 720)
 
-GAME_BREAK_AFTER_POINT: int = 3
+GAME_BREAK_AFTER_POINT: float = 3
 
 LINES_WIDTH: int = 8
 MIDDLE_LINES_COUNT: int = 10
@@ -22,9 +22,9 @@ PADDLE_WIDTH: int = 10
 TOP_LINE_Y: int = 100
 BOTTOM_LINE_Y: int = SCREEN_SIZE[1] - PADDLE_LENGTH
 
-BALL_RADIUS = 10
-BALL_X = SCREEN_SIZE[0] / 2 - BALL_RADIUS
-BALL_Y = (SCREEN_SIZE[1] + TOP_LINE_Y / 2) / 2
+BALL_RADIUS: int = 10
+BALL_X: int = SCREEN_SIZE[0] / 2 - BALL_RADIUS
+BALL_Y: int = (SCREEN_SIZE[1] + TOP_LINE_Y / 2) / 2
 
 PADDLES_OFFSET_X: int = 30
 PADDLE_1_X: int = PADDLES_OFFSET_X
@@ -46,10 +46,10 @@ POWER_UP_SIDE: int = 20
 POWER_UP_CD: float = 3
 POWER_OFFSET: int = 100
 ACTIVE_POWER_CD: float = 4
-AVALIABLE_POWERS = ["up_speed_player",
-                    "down_speed_player",
-                    "increase_own_paddle",
-                    "decrease_opponent_paddle"]
+AVALIABLE_POWERS: list = ["up_speed_player",
+                          "down_speed_player",
+                          "increase_own_paddle",
+                          "decrease_opponent_paddle"]
 
 SPEED_INCREASE: float = 1.5 * PADDLE_SPEED
 SPEED_DECREASE: float = 0.5 * PADDLE_SPEED
