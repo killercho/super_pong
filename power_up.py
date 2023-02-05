@@ -31,20 +31,26 @@ class Power_Up(pygame.sprite.Sprite):
     def set_active(self):
         self.__active = True
 
+    def set_timer(self, new_timer):
+        self.__active_timer = new_timer
+
     def get_timer(self):
         return self.__active_timer
 
-    def update_validity(self):
+    def update_validity(self) -> str:
         if not self.__active:
             if self.__despawn_timer > 0:
                 self.__despawn_timer -= 1
             else:
                 self.kill()
+                return self.__power
         else:
             if self.__active_timer > 0:
                 self.__active_timer -= 1
             else:
                 self.kill()
+                return self.__power
+        return ""
 
     def __get_active_timer(self):
         if self.__power == "up_speed_player" \

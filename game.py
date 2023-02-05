@@ -28,25 +28,17 @@ class Game:
         self.__spawned_powers = []
         self.__spawned_powers_count = 0
 
-        self.__paddle_velocities = [0, 0]
-        self.__paddle_speeds = [c.PADDLE_SPEED, c.PADDLE_SPEED]
-        self.__paddle_powers = [[], []]
-        self.__ball_powers = []
-
-        self.__paddle_1: Paddle = Paddle(
-            c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
-        self.__paddle_1.set_coordinates(c.PADDLE_1_X, c.PADDLE_1_Y)
-
-        self.__paddle_2: Paddle = Paddle(
-            c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)
-        self.__paddle_2.set_coordinates(c.PADDLE_2_X, c.PADDLE_2_Y)
+        self.__paddles = [Paddle(c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH),
+                          Paddle(c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)]
+        self.__paddles[0].set_coordinates(c.PADDLE_1_X, c.PADDLE_1_Y)
+        self.__paddles[1].set_coordinates(c.PADDLE_2_X, c.PADDLE_2_Y)
 
         self.__ball: Ball = Ball(c.WHITE, c.BALL_RADIUS)
         self.__ball.set_coordinates(c.BALL_X, c.BALL_Y)
 
         self.__all_sprites_list = pygame.sprite.Group()
-        self.__all_sprites_list.add(self.__paddle_1)
-        self.__all_sprites_list.add(self.__paddle_2)
+        self.__all_sprites_list.add(self.__paddles[0])
+        self.__all_sprites_list.add(self.__paddles[1])
         self.__all_sprites_list.add(self.__ball)
 
         self.__INGAME_TEXT_FONT = pygame.font.Font(None, 100)
@@ -64,15 +56,6 @@ class Game:
         self.__spawned_powers_count += 1
         self.__all_sprites_list.add(new_power)
 
-    def __create_new_paddle(self, paddle: Paddle, new_length: int) -> Paddle:
-        old_x, old_y = paddle.get_coordinates()
-        paddle.kill()
-        new_paddle: Paddle = Paddle(
-            c.WHITE, c.PADDLE_WIDTH, new_length)
-        new_paddle.set_coordinates(old_x, old_y)
-        self.__all_sprites_list.add(new_paddle)
-        return new_paddle
-
     def __clean_spawned_powers(self):
         for power in self.__spawned_powers:
             power.update_validity()
@@ -80,84 +63,27 @@ class Game:
     def __clean_all_spanwed_powers(self):
         for power in self.__spawned_powers:
             power.delete_power()
-
-    def __reverse_power(self, power: Power_Up, player: int):
-        power_effect = power.get_effect()
-        if player != -1:
-            if power_effect == "up_speed_player":
-                self.__paddle_speeds[player] = c.PADDLE_SPEED
-            elif power_effect == "down_speed_player":
-                self.__paddle_speeds[player] = c.PADDLE_SPEED
-            elif power_effect == "increase_own_paddle":
-                if player == 1:
-                    self.__paddle_1 = self.__create_new_paddle(
-                        self.__paddle_1, c.PADDLE_LENGTH)
-                else:
-                    self.__paddle_2 = self.__create_new_paddle(
-                        self.__paddle_2, c.PADDLE_LENGTH)
-            elif power_effect == "decrease_opponent_paddle":
-                if player == 1:
-                    self.__paddle_1 = self.__create_new_paddle(
-                        self.__paddle_1, c.PADDLE_LENGTH)
-                else:
-                    self.__paddle_2 = self.__create_new_paddle(
-                        self.__paddle_2, c.PADDLE_LENGTH)
+        self.__spawned_powers_count = 0
 
     def __reverse_all_powers(self):
-        self.__paddle_speeds = [c.PADDLE_SPEED, c.PADDLE_SPEED]
-        self.__paddle_1 = self.__create_new_paddle(
-            self.__paddle_1, c.PADDLE_LENGTH)
-        self.__paddle_2 = self.__create_new_paddle(
-            self.__paddle_2, c.PADDLE_LENGTH)
+        for paddle in self.__paddles:
+            paddle.reverse_all_powers()
 
     def __tick_active_powers(self):
-        for power in self.__paddle_powers[0]:
-            if power.get_timer() <= 0:
-                self.__paddle_powers[0].remove(power)
-                self.__reverse_power(power, 0)
-            power.update_validity()
-        for power in self.__paddle_powers[1]:
-            if power.get_timer() <= 0:
-                self.__paddle_powers[1].remove(power)
-                self.__reverse_power(power, 1)
-            power.update_validity()
+        for paddle in self.__paddles:
+            paddle.update_powers()
 
     def __apply_power_effect(self, power: Power_Up, player: int):
         if player != -1:
-            if power not in self.__paddle_powers[player - 1]:
-                power.set_active()
-                power_effect = power.get_effect()
-                if power_effect == "up_speed_player":
-                    self.__paddle_speeds[player - 1] *= c.SPEED_INCREASE
-                    self.__paddle_powers[player - 1].append(power)
-                elif power_effect == "down_speed_player":
-                    self.__paddle_speeds[player - 1] *= c.SPEED_DECREASE
-                    self.__paddle_powers[player - 1].append(power)
-                elif power_effect == "increase_own_paddle":
-                    if player == 1:
-                        self.__paddle_1 = self.__create_new_paddle(
-                            self.__paddle_1, c.INCREASED_LENGHT)
-                        self.__paddle_powers[0].append(power)
-                    else:
-                        self.__paddle_2 = self.__create_new_paddle(
-                            self.__paddle_2, c.INCREASED_LENGHT)
-                        self.__paddle_powers[1].append(power)
-                elif power_effect == "decrease_opponent_paddle":
-                    if player == 1:
-                        self.__paddle_2 = self.__create_new_paddle(
-                            self.__paddle_2, c.DECREASED_LENGHT)
-                        self.__paddle_powers[1].append(power)
-                    else:
-                        self.__paddle_1 = self.__create_new_paddle(
-                            self.__paddle_1, c.DECREASED_LENGHT)
-                        self.__paddle_powers[0].append(power)
-                self.__spawned_powers_count -= 1
+            power.set_active()
+            self.__paddles[player].add_power(power)
+            self.__spawned_powers_count -= 1
 
     def __apply_score_break(self):
         self.__clean_all_spanwed_powers()
         self.__reverse_all_powers()
-        self.__paddle_1.set_coordinates(c.PADDLE_1_X, c.PADDLE_1_Y)
-        self.__paddle_2.set_coordinates(c.PADDLE_2_X, c.PADDLE_2_Y)
+        self.__paddles[0].set_coordinates(c.PADDLE_1_X, c.PADDLE_1_Y)
+        self.__paddles[1].set_coordinates(c.PADDLE_2_X, c.PADDLE_2_Y)
         self.__ball.reset_ball()
 
     def __handle_ball_movement(self):
@@ -176,15 +102,15 @@ class Game:
 
     def __handle_collision(self):
         hit_paddle_1 = pygame.sprite.collide_mask(
-            self.__ball, self.__paddle_1)
+            self.__ball, self.__paddles[0])
         hit_paddle_2 = pygame.sprite.collide_mask(
-            self.__ball, self.__paddle_2)
+            self.__ball, self.__paddles[1])
         if hit_paddle_1:
-            self.__ball.bounce(self.__paddle_velocities[0])
-            self.__ball.set_last_hit(1)
+            self.__ball.bounce(self.__paddles[0].get_velocity())
+            self.__ball.set_last_hit(0)
         if hit_paddle_2:
-            self.__ball.bounce(self.__paddle_velocities[1])
-            self.__ball.set_last_hit(2)
+            self.__ball.bounce(self.__paddles[1].get_velocity())
+            self.__ball.set_last_hit(1)
 
         for power in self.__spawned_powers:
             mask = pygame.sprite.collide_mask(self.__ball, power)
@@ -196,21 +122,13 @@ class Game:
     def __handle_input(self):
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[pygame.K_w]:
-            self.__paddle_1.move_up(self.__paddle_speeds[0])
-            self.__paddle_velocities[0] = self.__paddle_speeds[0]
+            self.__paddles[0].move_up()
         elif pressed_keys[pygame.K_s]:
-            self.__paddle_1.move_down(self.__paddle_speeds[0])
-            self.__paddle_velocities[0] = self.__paddle_speeds[0]
-        else:
-            self.__paddle_velocities[0] = 0
+            self.__paddles[0].move_down()
         if pressed_keys[pygame.K_UP]:
-            self.__paddle_2.move_up(self.__paddle_speeds[1])
-            self.__paddle_velocities[1] = self.__paddle_speeds[1]
+            self.__paddles[1].move_up()
         elif pressed_keys[pygame.K_DOWN]:
-            self.__paddle_2.move_down(self.__paddle_speeds[1])
-            self.__paddle_velocities[1] = self.__paddle_speeds[1]
-        else:
-            self.__paddle_velocities[1] = 0
+            self.__paddles[1].move_down()
 
     def __create_middle_line(self):
         for i in range(0, c.SCREEN_SIZE[1], c.MIDDLE_LINES_STEP):

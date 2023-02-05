@@ -12,6 +12,7 @@ class Ball(pygame.sprite.Sprite):
         super().__init__()
 
         self.__last_hit = -1
+        self.__powers = []
 
         self.image = pygame.Surface([2 * radius, 2 * radius])
         self.image.fill(c.BLACK)
@@ -44,6 +45,7 @@ class Ball(pygame.sprite.Sprite):
         """Method implementing the bounce of the ball."""
         more_speed = randint(0, 2) if self.velocity[0] < 0 else randint(-2, 0)
         self.velocity[0] = -self.velocity[0] + more_speed
+
         y_sign = 1 if self.velocity[1] < 0 else -1
         self.velocity[1] = y_sign * additional_velocity + randint(0, 4)
 

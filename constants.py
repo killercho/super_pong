@@ -51,8 +51,8 @@ AVALIABLE_POWERS = ["up_speed_player",
                     "increase_own_paddle",
                     "decrease_opponent_paddle"]
 
-SPEED_INCREASE: float = 1.5
-SPEED_DECREASE: float = 0.5
+SPEED_INCREASE: float = 1.5 * PADDLE_SPEED
+SPEED_DECREASE: float = 0.5 * PADDLE_SPEED
 SPEED_TIMER: float = 4.5
 
 PADDLE_SIZE_TIMER: float = 3
