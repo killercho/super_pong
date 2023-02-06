@@ -24,7 +24,7 @@ class Game:
         self.__target_score: int = 50
         self.__score_break: float = c.GAME_BREAK_AFTER_POINT
 
-        self.__spawned_powers: list = []
+        self.__spawned_powers: pygame.sprite.Group = pygame.sprite.Group()
         self.__spawned_powers_count: int = 0
 
         self.__paddles: list = [Paddle(c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH),
@@ -51,9 +51,8 @@ class Game:
         new_power_y = randrange(
             c.TOP_LINE_Y + c.POWER_OFFSET, c.SCREEN_SIZE[1] - c.POWER_OFFSET)
         new_power: Power_Up = Power_Up(new_power_x, new_power_y)
-        self.__spawned_powers.append(new_power)
+        self.__spawned_powers.add(new_power)
         self.__spawned_powers_count += 1
-        self.__all_sprites_list.add(new_power)
 
     def __clean_spawned_powers(self) -> None:
         for power in self.__spawned_powers:
@@ -63,6 +62,7 @@ class Game:
         for power in self.__spawned_powers:
             power.delete_power()
         self.__spawned_powers_count = 0
+        self.__spawned_powers.empty()
 
     def __reverse_all_powers(self) -> None:
         for paddle in self.__paddles:
@@ -111,12 +111,12 @@ class Game:
             self.__ball.bounce(self.__paddles[1].get_velocity())
             self.__ball.set_last_hit(1)
 
-        for power in self.__spawned_powers:
-            mask: tuple = pygame.sprite.collide_mask(self.__ball, power)
-            if mask:
-                self.__apply_power_effect(
-                    power, self.__ball.get_last_hit())
-                power.delete_power()
+        colliding_power: Power_Up | None = pygame.sprite.spritecollideany(
+            self.__ball, self.__spawned_powers)
+        if colliding_power != None:
+            self.__apply_power_effect(
+                colliding_power, self.__ball.get_last_hit())
+            colliding_power.delete_power()
 
     def __handle_input(self) -> None:
         pressed_keys = pygame.key.get_pressed()
@@ -193,9 +193,11 @@ class Game:
                 self.__handle_ball_movement()
                 self.__handle_collision()
                 self.__all_sprites_list.update()
+                self.__spawned_powers.update()
 
             self.__screen.fill(c.BLACK)
             self.__all_sprites_list.draw(self.__screen)
+            self.__spawned_powers.draw(self.__screen)
 
             # creating punctured line
             self.__create_middle_line()
