@@ -76,13 +76,15 @@ class Paddle(pygame.sprite.Sprite):
     def get_velocity(self) -> int:
         return self.__velocity
 
-    def add_power(self, power: Power_Up) -> None:
+    def add_power(self, new_power: Power_Up) -> None:
         powers_arr: list = [p.get_effect() for p in self.__powers]
-        if power.get_effect() not in powers_arr:
-            self.__powers.append(power)
-            self.__apply_power(power)
+        if new_power.get_effect() not in powers_arr:
+            self.__powers.append(new_power)
+            self.__apply_power(new_power)
         else:
-            pass
+            for power in self.__powers:
+                if power.get_effect() == new_power.get_effect():
+                    power.reset_timer()
 
     def reverse_all_powers(self) -> None:
         for power in self.__powers:

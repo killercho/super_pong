@@ -47,8 +47,8 @@ class Power_Up(pygame.sprite.Sprite):
     def set_active(self) -> None:
         self.__active = True
 
-    def set_timer(self, new_timer: float) -> None:
-        self.__active_timer = new_timer
+    def reset_timer(self) -> None:
+        self.__active_timer = self.__get_active_timer()
 
     def get_timer(self) -> float:
         return self.__active_timer

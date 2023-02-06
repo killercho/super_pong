@@ -12,8 +12,8 @@ class Ball(pygame.sprite.Sprite):
     def __init__(self, color, radius) -> None:
         super().__init__()
 
-        self.__color = color
-        self.__radius = radius
+        self.__color: tuple = color
+        self.__radius: float = radius
 
         self.__last_hit: int = -1
         self.__powers: list = []
@@ -57,13 +57,15 @@ class Ball(pygame.sprite.Sprite):
         if effect == "smaller_ball" or effect == "bigger_ball":
             self.__change_size(c.BALL_RADIUS)
 
-    def add_power(self, power: Power_Up) -> None:
+    def add_power(self, new_power: Power_Up) -> None:
         powers_arr: list = [p.get_effect() for p in self.__powers]
-        if power.get_effect() not in powers_arr:
-            self.__powers.append(power)
-            self.__apply_power(power)
+        if new_power.get_effect() not in powers_arr:
+            self.__powers.append(new_power)
+            self.__apply_power(new_power)
         else:
-            pass
+            for power in self.__powers:
+                if power.get_effect() == new_power.get_effect():
+                    power.reset_timer()
 
     def reverse_all_powers(self) -> None:
         for power in self.__powers:
@@ -116,6 +118,9 @@ class Ball(pygame.sprite.Sprite):
     def get_ball_position(self) -> None:
         """Method allowing for the ball position to be accessed."""
         return self.rect.x, self.rect.y
+
+    def get_radius(self) -> float:
+        return self.__radius
 
     def reverse_velocity_x(self) -> None:
         """Method reversing x velocity of the ball."""
