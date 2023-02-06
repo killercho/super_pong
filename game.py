@@ -67,15 +67,21 @@ class Game:
     def __reverse_all_powers(self) -> None:
         for paddle in self.__paddles:
             paddle.reverse_all_powers()
+        self.__ball.reverse_all_powers()
 
     def __tick_active_powers(self) -> None:
         for paddle in self.__paddles:
             paddle.update_powers()
+        self.__ball.update_powers()
 
-    def __apply_power_effect(self, power: Power_Up, player: int) -> None:
-        if player != -1:
+    def __apply_power_effect(self, power: Power_Up, player: int, is_ball_power: bool) -> None:
+        if player != -1 and not is_ball_power:
             power.set_active()
             self.__paddles[player].add_power(power)
+            self.__spawned_powers_count -= 1
+        elif is_ball_power:
+            power.set_active()
+            self.__ball.add_power(power)
             self.__spawned_powers_count -= 1
 
     def __apply_score_break(self) -> None:
@@ -115,7 +121,7 @@ class Game:
             self.__ball, self.__spawned_powers)
         if colliding_power != None:
             self.__apply_power_effect(
-                colliding_power, self.__ball.get_last_hit())
+                colliding_power, self.__ball.get_last_hit(), colliding_power.is_ball_power())
             colliding_power.delete_power()
 
     def __handle_input(self) -> None:

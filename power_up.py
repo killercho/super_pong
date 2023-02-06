@@ -32,6 +32,9 @@ class Power_Up(pygame.sprite.Sprite):
         elif self.__power == "increase_own_paddle" \
                 or self.__power == "decrease_opponent_paddle":
             return c.PADDLE_SIZE_TIMER
+        elif self.__power == "smaller_ball" \
+                or self.__power == "bigger_ball":
+            return c.BALL_SIZE_TIMER
         return 0.0
 
     def __get_random_power(self) -> str:
@@ -49,6 +52,11 @@ class Power_Up(pygame.sprite.Sprite):
 
     def get_timer(self) -> float:
         return self.__active_timer
+
+    def is_ball_power(self) -> bool:
+        if self.__power in ["smaller_ball", "bigger_ball"]:
+            return True
+        return False
 
     def delete_power(self) -> None:
         self.kill()
