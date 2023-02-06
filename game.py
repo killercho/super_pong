@@ -2,7 +2,6 @@
 
 import sys
 from random import randrange
-from time import sleep
 import pygame
 import constants as c
 from paddle import Paddle

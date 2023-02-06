@@ -24,7 +24,7 @@ class Paddle(pygame.sprite.Sprite):
         self.image.fill(c.BLACK)
         self.image.set_colorkey(c.BLACK)
 
-        pygame.draw.rect(self.image, color, [
+        pygame.draw.rect(self.image, self.__color, [
                          0, 0, self.__width, self.__height])
 
         self.rect: pygame.Rect = self.image.get_rect()

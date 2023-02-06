@@ -19,36 +19,38 @@ class Ball(pygame.sprite.Sprite):
 
         pygame.draw.circle(self.image, color, (radius, radius), radius)
 
-        random_speed_x: int = randint(-8, 8)
-        while -2 < random_speed_x < 2:
-            random_speed_x = randint(-8, 8)
-        self.velocity: list = [random_speed_x, randint(-8, 8)]
+        random_speed_x: int = randint(-c.BALL_MAX_VEL, c.BALL_MAX_VEL)
+        while -c.BALL_MIN_VEL < random_speed_x < c.BALL_MIN_VEL:
+            random_speed_x = randint(-c.BALL_MAX_VEL, c.BALL_MAX_VEL)
+        self.__velocity: list = [random_speed_x,
+                                 randint(-c.BALL_MAX_VEL, c.BALL_MAX_VEL)]
 
         self.rect: pygame.Rect = self.image.get_rect()
 
     def reset_ball(self) -> None:
         """Method giving the ball a new random velocity, used after the break 
             because of a score."""
-        random_speed_x: int = randint(-8, 8)
-        while -2 < random_speed_x < 2:
-            random_speed_x = randint(-8, 8)
-        self.velocity = [random_speed_x, randint(-8, 8)]
+        random_speed_x: int = randint(-c.BALL_MAX_VEL, c.BALL_MAX_VEL)
+        while -c.BALL_MIN_VEL < random_speed_x < c.BALL_MIN_VEL:
+            random_speed_x = randint(-c.BALL_MAX_VEL, c.BALL_MAX_VEL)
+        self.__velocity = [random_speed_x,
+                           randint(-c.BALL_MAX_VEL, c.BALL_MAX_VEL)]
         self.__last_hit = -1
         self.set_coordinates(c.BALL_X, c.BALL_Y)
 
     def update(self) -> None:
         """Method updating the movement of the ball."""
-        self.rect.x += self.velocity[0]
-        self.rect.y += self.velocity[1]
+        self.rect.x += self.__velocity[0]
+        self.rect.y += self.__velocity[1]
 
     def bounce(self, additional_velocity: int) -> None:
         """Method implementing the bounce of the ball."""
         more_speed: int = randint(
-            0, 2) if self.velocity[0] < 0 else randint(-2, 0)
-        self.velocity[0] = -self.velocity[0] + more_speed
+            0, 2) if self.__velocity[0] < 0 else randint(-2, 0)
+        self.__velocity[0] = -self.__velocity[0] + more_speed
 
-        y_sign: int = 1 if self.velocity[1] < 0 else -1
-        self.velocity[1] = y_sign * additional_velocity + randint(0, 4)
+        y_sign: int = 1 if self.__velocity[1] < 0 else -1
+        self.__velocity[1] = y_sign * additional_velocity + randint(0, 4)
 
     def get_last_hit(self) -> None:
         return self.__last_hit
@@ -67,8 +69,8 @@ class Ball(pygame.sprite.Sprite):
 
     def reverse_velocity_x(self) -> None:
         """Method reversing x velocity of the ball."""
-        self.velocity[0] = -self.velocity[0]
+        self.__velocity[0] = -self.__velocity[0]
 
     def reverse_velocity_y(self) -> None:
         """Method reversing y velocity of the ball."""
-        self.velocity[1] = -self.velocity[1]
+        self.__velocity[1] = -self.__velocity[1]
