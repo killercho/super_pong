@@ -16,6 +16,7 @@ class Paddle(pygame.sprite.Sprite):
         self.__color: tuple = color
         self.__speed: float = c.PADDLE_SPEED
         self.__velocity: int = 0
+        self.__reversed_controls: bool = False
 
         self.__powers: list = []
 
@@ -52,12 +53,16 @@ class Paddle(pygame.sprite.Sprite):
             self.__change_size(c.INCREASED_LENGHT)
         elif effect == "decrease_opponent_paddle":
             self.__change_size(c.DECREASED_LENGHT)
+        elif effect == "reversed_controls":
+            self.__reversed_controls = True
 
     def __reverse_effects(self, effect: str) -> None:
         if effect == "up_speed_player" or effect == "down_speed_player":
             self.__speed = c.PADDLE_SPEED
         elif effect == "increase_own_paddle" or effect == "decrease_opponent_paddle":
             self.__change_size(c.PADDLE_LENGTH)
+        elif effect == "reversed_controls":
+            self.__reversed_controls = False
 
     def get_coordinates(self) -> tuple:
         return (self.rect.x, self.rect.y)
@@ -79,6 +84,7 @@ class Paddle(pygame.sprite.Sprite):
     def add_power(self, new_power: Power_Up) -> None:
         powers_arr: list = [p.get_effect() for p in self.__powers]
         if new_power.get_effect() not in powers_arr:
+            new_power.set_active()
             self.__powers.append(new_power)
             self.__apply_power(new_power)
         else:
@@ -101,19 +107,11 @@ class Paddle(pygame.sprite.Sprite):
     def update(self) -> None:
         self.__velocity = 0
 
-    def move_up(self) -> None:
-        """Method allowing for the paddles to move up."""
-        self.rect.y -= self.__speed
-        self.__velocity = self.__speed
-
+        # top line detection
         if self.rect.y < c.TOP_LINE_Y:
             self.rect.y = c.TOP_LINE_Y
 
-    def move_down(self) -> None:
-        """Method allowing for the paddles to move down."""
-        self.rect.y += self.__speed
-        self.__velocity = self.__speed
-
+        # bottom line detection
         bottom_correction: int = 0
         if self.__height > c.PADDLE_LENGTH:
             bottom_correction = -(c.INCREASED_LENGHT - c.PADDLE_LENGTH)
@@ -122,3 +120,19 @@ class Paddle(pygame.sprite.Sprite):
 
         if self.rect.y > c.BOTTOM_LINE_Y + bottom_correction:
             self.rect.y = c.BOTTOM_LINE_Y + bottom_correction
+
+    def move_up(self) -> None:
+        """Method allowing for the paddles to move up."""
+        if not self.__reversed_controls:
+            self.rect.y -= self.__speed
+        else:
+            self.rect.y += self.__speed
+        self.__velocity = self.__speed
+
+    def move_down(self) -> None:
+        """Method allowing for the paddles to move down."""
+        if not self.__reversed_controls:
+            self.rect.y += self.__speed
+        else:
+            self.rect.y -= self.__speed
+        self.__velocity = self.__speed

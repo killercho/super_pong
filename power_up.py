@@ -14,6 +14,7 @@ class Power_Up(pygame.sprite.Sprite):
 
         self.__power: str = self.__get_random_power()
         self.__is_hidden: bool = self.__determine_hidden()
+        self.__effects_opponent: bool = self.__get_effect_target()
 
         self.__despawn_timer: float = c.ACTIVE_POWER_CD
         self.__active_timer: float = self.__get_active_timer()
@@ -41,7 +42,14 @@ class Power_Up(pygame.sprite.Sprite):
         elif self.__power == "smaller_ball" \
                 or self.__power == "bigger_ball":
             return c.BALL_SIZE_TIMER
+        elif self.__power == "reversed_controls":
+            return c.REVERSED_CONTROLS_TIMER
         return 0.0
+
+    def __get_effect_target(self) -> bool:
+        if self.__power in ["up_speed_player", "down_speed_player", "increase_own_paddle"]:
+            return False
+        return True
 
     def __get_random_power(self) -> str:
         rand_index = randrange(0, len(c.AVALIABLE_POWERS))
@@ -59,6 +67,9 @@ class Power_Up(pygame.sprite.Sprite):
 
     def reset_timer(self) -> None:
         self.__active_timer = self.__get_active_timer()
+
+    def effects_opponent(self):
+        return self.__effects_opponent
 
     def get_timer(self) -> float:
         return self.__active_timer

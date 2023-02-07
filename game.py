@@ -76,8 +76,9 @@ class Game:
 
     def __apply_power_effect(self, power: Power_Up, player: int, is_ball_power: bool) -> None:
         if player != -1 and not is_ball_power:
-            power.set_active()
-            self.__paddles[player].add_power(power)
+            effected_player = int(
+                not player) if power.effects_opponent() else player
+            self.__paddles[effected_player].add_power(power)
             self.__spawned_powers_count -= 1
         elif is_ball_power:
             power.set_active()
