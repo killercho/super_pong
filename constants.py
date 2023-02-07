@@ -10,6 +10,8 @@ WHITE: tuple = (255, 255, 255)
 
 SCREEN_SIZE: tuple = (1280, 720)
 
+ASSETS_FOLDER = "assets"
+
 GAME_BREAK_AFTER_POINT: float = 3
 
 LINES_WIDTH: int = 8
@@ -48,14 +50,6 @@ POWER_UP_SIDE: int = 20
 POWER_UP_CD: float = 1  # was 3
 POWER_OFFSET: int = 100
 ACTIVE_POWER_CD: float = 4
-AVALIABLE_POWERS: list = ["up_speed_player",
-                          "down_speed_player",
-                          "increase_own_paddle",
-                          "decrease_opponent_paddle",
-                          "smaller_ball",
-                          "bigger_ball",
-                          "reversed_controls",
-                          "invisible_ball"]
 
 SPEED_INCREASE: float = 1.5 * PADDLE_SPEED
 SPEED_DECREASE: float = 0.5 * PADDLE_SPEED

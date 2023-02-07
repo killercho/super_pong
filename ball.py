@@ -2,7 +2,7 @@
 
 from random import randint
 import pygame
-from power_up import Power_Up
+from power_up import Power_Up, Powers
 import constants as c
 
 
@@ -48,21 +48,24 @@ class Ball(pygame.sprite.Sprite):
         self.set_coordinates(old_x, old_y)
 
     def __apply_power(self, power: Power_Up) -> None:
-        effect: str = power.get_effect()
-        if effect == "smaller_ball":
+        effect: Powers = power.get_effect()
+        if effect is Powers.SMALLER_BALL:
             self.__change_surface(c.BALL_DECREASED_RADIUS, c.WHITE)
-        elif effect == "bigger_ball":
+        elif effect is Powers.BIGGER_BALL:
             self.__change_surface(c.BALL_INCREASED_RADIUS, c.WHITE)
-        elif effect == "invisible_ball":
+        elif effect is Powers.INVISIBLE_BALL:
             self.__change_surface(c.BALL_RADIUS, c.BLACK)
 
-    def __reverse_effects(self, effect: str) -> None:
-        if effect in ["smaller_ball", "bigger_ball", "invisible_ball"]:
+    def __reverse_effects(self, effect: Powers) -> None:
+        if effect is Powers.SMALLER_BALL \
+            or effect is Powers.BIGGER_BALL \
+                or effect is Powers.INVISIBLE_BALL:
             self.__change_surface(c.BALL_RADIUS, c.WHITE)
 
     def add_power(self, new_power: Power_Up) -> None:
         powers_arr: list = [p.get_effect() for p in self.__powers]
         if new_power.get_effect() not in powers_arr:
+            new_power.set_active()
             self.__powers.append(new_power)
             self.__apply_power(new_power)
         else:
@@ -78,12 +81,12 @@ class Ball(pygame.sprite.Sprite):
     def update_powers(self) -> None:
         for power in self.__powers:
             effect: str = power.update_validity()
-            if effect != "":
+            if effect is not Powers.NULL_POWER:
                 self.__powers.remove(power)
                 self.__reverse_effects(effect)
 
     def reset_ball(self) -> None:
-        """Method giving the ball a new random velocity, used after the break 
+        """Method giving the ball a new random velocity, used after the break
             because of a score."""
         random_speed_x: int = randint(-c.BALL_MAX_VEL, c.BALL_MAX_VEL)
         while -c.BALL_MIN_VEL < random_speed_x < c.BALL_MIN_VEL:

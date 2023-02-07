@@ -2,7 +2,7 @@
 
 import pygame
 import constants as c
-from power_up import Power_Up
+from power_up import Power_Up, Powers
 
 
 class Paddle(pygame.sprite.Sprite):
@@ -44,24 +44,24 @@ class Paddle(pygame.sprite.Sprite):
         self.rect.y = old_y
 
     def __apply_power(self, power: Power_Up) -> None:
-        effect: str = power.get_effect()
-        if effect == "up_speed_player":
+        effect: Powers = power.get_effect()
+        if effect is Powers.UP_SPEED_PLAYER:
             self.__speed = c.SPEED_INCREASE
-        elif effect == "down_speed_player":
+        elif effect is Powers.DOWN_SPEED_PLAYER:
             self.__speed = c.SPEED_DECREASE
-        elif effect == "increase_own_paddle":
+        elif effect is Powers.INCREASE_OWN_PADDLE:
             self.__change_size(c.INCREASED_LENGHT)
-        elif effect == "decrease_opponent_paddle":
+        elif effect is Powers.DECREASE_OPPONENT_PADDLE:
             self.__change_size(c.DECREASED_LENGHT)
-        elif effect == "reversed_controls":
+        elif effect is Powers.REVERSED_CONTROLS:
             self.__reversed_controls = True
 
-    def __reverse_effects(self, effect: str) -> None:
-        if effect == "up_speed_player" or effect == "down_speed_player":
+    def __reverse_effects(self, effect: Powers) -> None:
+        if effect is Powers.UP_SPEED_PLAYER or effect is Powers.DOWN_SPEED_PLAYER:
             self.__speed = c.PADDLE_SPEED
-        elif effect == "increase_own_paddle" or effect == "decrease_opponent_paddle":
+        elif effect is Powers.INCREASE_OWN_PADDLE or effect is Powers.DECREASE_OPPONENT_PADDLE:
             self.__change_size(c.PADDLE_LENGTH)
-        elif effect == "reversed_controls":
+        elif effect is Powers.REVERSED_CONTROLS:
             self.__reversed_controls = False
 
     def get_coordinates(self) -> tuple:
@@ -99,8 +99,8 @@ class Paddle(pygame.sprite.Sprite):
 
     def update_powers(self) -> None:
         for power in self.__powers:
-            effect: str = power.update_validity()
-            if effect != "":
+            effect: Powers = power.update_validity()
+            if effect is not Powers.NULL_POWER:
                 self.__powers.remove(power)
                 self.__reverse_effects(effect)
 
