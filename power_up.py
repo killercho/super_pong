@@ -13,13 +13,19 @@ class Power_Up(pygame.sprite.Sprite):
         super().__init__()
 
         self.__power: str = self.__get_random_power()
+        self.__is_hidden: bool = self.__determine_hidden()
 
         self.__despawn_timer: float = c.ACTIVE_POWER_CD
         self.__active_timer: float = self.__get_active_timer()
         self.__active: bool = False
 
-        self.image: pygame.Surface = pygame.image.load(
-            os.path.join("assets", f"{self.__power}.png"))
+        self.image: pygame.Surface
+        if self.__is_hidden:
+            self.image = pygame.image.load(
+                os.path.join("assets", "random_power.png"))
+        else:
+            self.image = pygame.image.load(
+                os.path.join("assets", f"{self.__power}.png"))
 
         self.rect: pygame.Rect = self.image.get_rect()
         self.rect.x = spawn_x
@@ -40,6 +46,10 @@ class Power_Up(pygame.sprite.Sprite):
     def __get_random_power(self) -> str:
         rand_index = randrange(0, len(c.AVALIABLE_POWERS))
         return c.AVALIABLE_POWERS[rand_index]
+
+    def __determine_hidden(self) -> bool:
+        number: int = randrange(1, len(c.AVALIABLE_POWERS))
+        return number == 1
 
     def get_effect(self) -> str:
         return self.__power
