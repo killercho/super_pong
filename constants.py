@@ -54,7 +54,8 @@ AVALIABLE_POWERS: list = ["up_speed_player",
                           "decrease_opponent_paddle",
                           "smaller_ball",
                           "bigger_ball",
-                          "reversed_controls"]
+                          "reversed_controls",
+                          "invisible_ball"]
 
 SPEED_INCREASE: float = 1.5 * PADDLE_SPEED
 SPEED_DECREASE: float = 0.5 * PADDLE_SPEED
@@ -67,5 +68,7 @@ DECREASED_LENGHT: float = 0.5 * PADDLE_LENGTH
 BALL_SIZE_TIMER: float = 3
 BALL_INCREASED_RADIUS: float = 1.5 * BALL_RADIUS
 BALL_DECREASED_RADIUS: float = 0.5 * BALL_RADIUS
+
+BALL_INVISIBILITY_TIMER: float = 1
 
 REVERSED_CONTROLS_TIMER: float = 3

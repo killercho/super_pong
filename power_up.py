@@ -44,6 +44,8 @@ class Power_Up(pygame.sprite.Sprite):
             return c.BALL_SIZE_TIMER
         elif self.__power == "reversed_controls":
             return c.REVERSED_CONTROLS_TIMER
+        elif self.__power == "invisible_ball":
+            return c.BALL_INVISIBILITY_TIMER
         return 0.0
 
     def __get_effect_target(self) -> bool:
@@ -75,7 +77,7 @@ class Power_Up(pygame.sprite.Sprite):
         return self.__active_timer
 
     def is_ball_power(self) -> bool:
-        if self.__power in ["smaller_ball", "bigger_ball"]:
+        if self.__power in ["smaller_ball", "bigger_ball", "invisible_ball"]:
             return True
         return False
 

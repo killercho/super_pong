@@ -33,8 +33,9 @@ class Ball(pygame.sprite.Sprite):
 
         self.rect: pygame.Rect = self.image.get_rect()
 
-    def __change_size(self, new_radius: float) -> None:
+    def __change_surface(self, new_radius: float, new_color: tuple) -> None:
         self.__radius = new_radius
+        self.__color = new_color
         self.image: pygame.Surface = pygame.Surface(
             [2 * self.__radius, 2 * self.__radius])
         self.image.fill(c.BLACK)
@@ -49,13 +50,15 @@ class Ball(pygame.sprite.Sprite):
     def __apply_power(self, power: Power_Up) -> None:
         effect: str = power.get_effect()
         if effect == "smaller_ball":
-            self.__change_size(c.BALL_DECREASED_RADIUS)
+            self.__change_surface(c.BALL_DECREASED_RADIUS, c.WHITE)
         elif effect == "bigger_ball":
-            self.__change_size(c.BALL_INCREASED_RADIUS)
+            self.__change_surface(c.BALL_INCREASED_RADIUS, c.WHITE)
+        elif effect == "invisible_ball":
+            self.__change_surface(c.BALL_RADIUS, c.BLACK)
 
     def __reverse_effects(self, effect: str) -> None:
-        if effect == "smaller_ball" or effect == "bigger_ball":
-            self.__change_size(c.BALL_RADIUS)
+        if effect in ["smaller_ball", "bigger_ball", "invisible_ball"]:
+            self.__change_surface(c.BALL_RADIUS, c.WHITE)
 
     def add_power(self, new_power: Power_Up) -> None:
         powers_arr: list = [p.get_effect() for p in self.__powers]
