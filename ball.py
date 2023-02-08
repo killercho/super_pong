@@ -1,6 +1,7 @@
 """ Ball file holding the class Ball. """
 
 from random import randint
+from math import cos, sin
 import pygame
 from power_up import Power_Up, Powers
 import constants as c
@@ -101,14 +102,19 @@ class Ball(pygame.sprite.Sprite):
         self.rect.x += self.__velocity[0]
         self.rect.y += self.__velocity[1]
 
-    def bounce(self, additional_velocity: int) -> None:
+    def bounce(self, additional_velocity: int, paddle_y: int, paddle_height: int) -> None:
         """Method implementing the bounce of the ball."""
+        intersectionY: int = paddle_y + paddle_height / 2 - self.rect.y
+        normalized_intersection: float = intersectionY / (paddle_height / 2)
+        bounce_angle: float = normalized_intersection * c.BALL_MAX_BOUNCE
+
         more_speed: int = randint(
             0, 2) if self.__velocity[0] < 0 else randint(-2, 0)
         self.__velocity[0] = -self.__velocity[0] + more_speed
 
         y_sign: int = 1 if self.__velocity[1] < 0 else -1
-        self.__velocity[1] = y_sign * additional_velocity + randint(0, 4)
+        self.__velocity[1] = y_sign * additional_velocity + \
+            self.__velocity[1]*(sin(bounce_angle))
 
     def get_last_hit(self) -> None:
         return self.__last_hit

@@ -102,7 +102,7 @@ class Game:
             self.__score_2 += 1
             self.__score_break = c.GAME_BREAK_AFTER_POINT
             self.__apply_score_break()
-        if self.__ball.get_ball_position()[1] < c.TOP_LINE_Y + 5:
+        if self.__ball.get_ball_position()[1] <= c.TOP_LINE_Y + radius:
             self.__ball.reverse_velocity_y()
         elif self.__ball.get_ball_position()[1] >= c.SCREEN_SIZE[1] - radius * 2:
             self.__ball.reverse_velocity_y()
@@ -113,10 +113,14 @@ class Game:
         hit_paddle_2 = pygame.sprite.collide_mask(
             self.__ball, self.__paddles[1])
         if hit_paddle_1:
-            self.__ball.bounce(self.__paddles[0].get_velocity())
+            self.__ball.bounce(self.__paddles[0].get_velocity(),
+                               self.__paddles[0].get_coordinates()[1],
+                               self.__paddles[0].get_height())
             self.__ball.set_last_hit(0)
         if hit_paddle_2:
-            self.__ball.bounce(self.__paddles[1].get_velocity())
+            self.__ball.bounce(self.__paddles[1].get_velocity(),
+                               self.__paddles[1].get_coordinates()[1],
+                               self.__paddles[1].get_height())
             self.__ball.set_last_hit(1)
 
         colliding_power: Power_Up | None = pygame.sprite.spritecollideany(

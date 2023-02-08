@@ -1,6 +1,7 @@
 """ Constants file that holds all the constants needed for the game """
 
 import pygame_menu
+from math import pi
 
 BLACK: tuple = (0, 0, 0)
 RED: tuple = (255, 0, 0)
@@ -29,6 +30,7 @@ BALL_X: int = SCREEN_SIZE[0] / 2 - BALL_RADIUS
 BALL_Y: int = (SCREEN_SIZE[1] + TOP_LINE_Y / 2) / 2
 BALL_MIN_VEL: int = 3
 BALL_MAX_VEL: int = 8
+BALL_MAX_BOUNCE: int = 5*pi/12
 
 PADDLES_OFFSET_X: int = 30
 PADDLE_1_X: int = PADDLES_OFFSET_X

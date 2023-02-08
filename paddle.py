@@ -67,6 +67,9 @@ class Paddle(pygame.sprite.Sprite):
     def get_coordinates(self) -> tuple:
         return (self.rect.x, self.rect.y)
 
+    def get_height(self) -> int:
+        return self.__height
+
     def set_coordinates(self, new_x: int, new_y: int) -> None:
         """Method implementing a way to set the coordinates of the paddle whenever needed."""
         self.rect.x = new_x
