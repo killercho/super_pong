@@ -113,9 +113,11 @@ class Ball(pygame.sprite.Sprite):
         self.rect.y += self.__velocity[1] + sign * additional_gravity
 
         if self.rect.y <= c.TOP_LINE_Y + self.__radius:
-            self.rect.y += -self.__velocity[1]
+            print("it went there again")
+            self.rect.y = c.TOP_LINE_Y + self.__radius + 1
             self.reverse_velocity_y()
         elif self.rect.y >= c.SCREEN_SIZE[1] - self.__radius * 2:
+            self.rect.y = c.SCREEN_SIZE[1] - self.__radius * 2 - 1
             self.reverse_velocity_y()
 
     def bounce(self, additional_velocity: int, paddle_y: int, paddle_height: int) -> None:

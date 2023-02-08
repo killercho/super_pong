@@ -98,8 +98,7 @@ class Power_Up(pygame.sprite.Sprite):
         return True
 
     def __get_random_power(self) -> Powers:
-        # power: Powers = choice(list(Powers))
-        power: Powers = Powers.GRAVITY
+        power: Powers = choice(list(Powers))
         while(power is Powers.NULL_POWER):
             power = choice(list(Powers))
         return power
