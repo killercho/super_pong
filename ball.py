@@ -113,7 +113,6 @@ class Ball(pygame.sprite.Sprite):
         self.rect.y += self.__velocity[1] + sign * additional_gravity
 
         if self.rect.y <= c.TOP_LINE_Y + self.__radius:
-            print("it went there again")
             self.rect.y = c.TOP_LINE_Y + self.__radius + 1
             self.reverse_velocity_y()
         elif self.rect.y >= c.SCREEN_SIZE[1] - self.__radius * 2:

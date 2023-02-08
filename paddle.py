@@ -8,9 +8,10 @@ from power_up import Power_Up, Powers
 class Paddle(pygame.sprite.Sprite):
     """Paddle class implementing the logic behind the paddles in Pong."""
 
-    def __init__(self, color: tuple, width: int, height: int) -> None:
+    def __init__(self, player: int, color: tuple, width: int, height: int) -> None:
         super().__init__()
 
+        self.__player: int = player
         self.__height: int = height
         self.__width: int = width
         self.__color: tuple = color
@@ -67,6 +68,9 @@ class Paddle(pygame.sprite.Sprite):
     def get_coordinates(self) -> tuple:
         return (self.rect.x, self.rect.y)
 
+    def get_player(self) -> int:
+        return self.__player
+
     def get_height(self) -> int:
         return self.__height
 
@@ -83,6 +87,9 @@ class Paddle(pygame.sprite.Sprite):
 
     def get_velocity(self) -> int:
         return self.__velocity
+
+    def get_powers_images(self) -> list:
+        return [power.get_image() for power in self.__powers]
 
     def add_power(self, new_power: Power_Up) -> None:
         powers_arr: list = [p.get_effect() for p in self.__powers]

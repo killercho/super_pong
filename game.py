@@ -27,8 +27,8 @@ class Game:
         self.__spawned_powers: pygame.sprite.Group = pygame.sprite.Group()
         self.__spawned_powers_count: int = 0
 
-        self.__paddles: list = [Paddle(c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH),
-                                Paddle(c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)]
+        self.__paddles: list = [Paddle(0, c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH),
+                                Paddle(1, c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)]
         self.__paddles[0].set_coordinates(c.PADDLE_1_X, c.PADDLE_1_Y)
         self.__paddles[1].set_coordinates(c.PADDLE_2_X, c.PADDLE_2_Y)
 
@@ -156,20 +156,30 @@ class Game:
         self.__screen.blit(
             text, (c.SCREEN_SIZE[0] / 2 - 35, c.SCREEN_SIZE[1] / 2 - 35))
 
+    def __render_powers_list(self, paddle: Paddle) -> None:
+        all_powers: list = paddle.get_powers_images()
+        for i in range(0, len(all_powers)):
+            location: int = i * c.POWER_UP_SIDE + 300 + 800 * paddle.get_player()
+            self.__screen.blit(
+                all_powers[i], (location, 40))
+
     def __render_top_info(self) -> None:
         text: pygame.Surface = self.__INGAME_TEXT_FONT.render(
             str(self.__score_1), 1, c.WHITE)
-        self.__screen.blit(text, (532, 20))
+        self.__screen.blit(text, (552, 20))
         text: pygame.Surface = self.__INGAME_TEXT_FONT.render(
             str(self.__score_2), 1, c.WHITE)
-        self.__screen.blit(text, (722, 20))
+        self.__screen.blit(text, (692, 20))
 
         text: pygame.Surface = self.__INGAME_TEXT_FONT.render(
             self.__name_1, 1, c.WHITE)
-        self.__screen.blit(text, (100, 20))
+        self.__screen.blit(text, (50, 20))
         text: pygame.Surface = self.__INGAME_TEXT_FONT.render(
             self.__name_2, 1, c.WHITE)
-        self.__screen.blit(text, (854, 20))
+        self.__screen.blit(text, (750, 20))
+
+        for paddle in self.__paddles:
+            self.__render_powers_list(paddle)
 
     def __start_game(self) -> None:
         power_cd: int = c.POWER_UP_CD

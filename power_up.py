@@ -122,6 +122,9 @@ class Power_Up(pygame.sprite.Sprite):
     def get_timer(self) -> float:
         return self.__active_timer
 
+    def get_image(self) -> pygame.Surface:
+        return self.image
+
     def is_ball_power(self) -> bool:
         if self.__power in [Powers.SMALLER_BALL,
                             Powers.BIGGER_BALL,

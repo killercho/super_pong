@@ -49,7 +49,7 @@ MAX_NAME_SYMBOLS: int = 10
 
 # Power ups and their constants
 POWER_UP_SIDE: int = 20
-POWER_UP_CD: float = 3  # was 3
+POWER_UP_CD: float = 1  # was 3
 POWER_OFFSET: int = 100
 ACTIVE_POWER_CD: float = 4
 
