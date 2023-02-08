@@ -18,6 +18,7 @@ class Ball(pygame.sprite.Sprite):
 
         self.__last_hit: int = -1
         self.__powers: list = []
+        self.__gravity_effected: bool = False
 
         self.image: pygame.Surface = pygame.Surface(
             [2 * self.__radius, 2 * self.__radius])
@@ -56,12 +57,16 @@ class Ball(pygame.sprite.Sprite):
             self.__change_surface(c.BALL_INCREASED_RADIUS, c.WHITE)
         elif effect is Powers.INVISIBLE_BALL:
             self.__change_surface(c.BALL_RADIUS, c.BLACK)
+        elif effect is Powers.GRAVITY:
+            self.__gravity_effected = True
 
     def __reverse_effects(self, effect: Powers) -> None:
         if effect is Powers.SMALLER_BALL \
             or effect is Powers.BIGGER_BALL \
                 or effect is Powers.INVISIBLE_BALL:
             self.__change_surface(c.BALL_RADIUS, c.WHITE)
+        elif effect is Powers.GRAVITY:
+            self.__gravity_effected = False
 
     def add_power(self, new_power: Power_Up) -> None:
         powers_arr: list = [p.get_effect() for p in self.__powers]
@@ -99,8 +104,19 @@ class Ball(pygame.sprite.Sprite):
 
     def update(self) -> None:
         """Method updating the movement of the ball."""
+        additional_gravity: int = c.GRAVITY_STRENGHT \
+            if self.__gravity_effected else 0
+
+        sign: int = 1 if self.__velocity[1] > 0 else -1
+
         self.rect.x += self.__velocity[0]
-        self.rect.y += self.__velocity[1]
+        self.rect.y += self.__velocity[1] + sign * additional_gravity
+
+        if self.rect.y <= c.TOP_LINE_Y + self.__radius:
+            self.rect.y += -self.__velocity[1]
+            self.reverse_velocity_y()
+        elif self.rect.y >= c.SCREEN_SIZE[1] - self.__radius * 2:
+            self.reverse_velocity_y()
 
     def bounce(self, additional_velocity: int, paddle_y: int, paddle_height: int) -> None:
         """Method implementing the bounce of the ball."""

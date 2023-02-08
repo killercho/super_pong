@@ -102,10 +102,6 @@ class Game:
             self.__score_2 += 1
             self.__score_break = c.GAME_BREAK_AFTER_POINT
             self.__apply_score_break()
-        if self.__ball.get_ball_position()[1] <= c.TOP_LINE_Y + radius:
-            self.__ball.reverse_velocity_y()
-        elif self.__ball.get_ball_position()[1] >= c.SCREEN_SIZE[1] - radius * 2:
-            self.__ball.reverse_velocity_y()
 
     def __handle_collision(self) -> None:
         hit_paddle_1 = pygame.sprite.collide_mask(

@@ -17,6 +17,7 @@ class Powers(Enum):
     BIGGER_BALL = 6
     REVERSED_CONTROLS = 7
     INVISIBLE_BALL = 8
+    GRAVITY = 9
 
 
 class Power_Up(pygame.sprite.Sprite):
@@ -67,6 +68,9 @@ class Power_Up(pygame.sprite.Sprite):
         if self.__power is Powers.INVISIBLE_BALL:
             return pygame.image.load(
                 os.path.join(c.ASSETS_FOLDER, "invisible_ball.png"))
+        if self.__power is Powers.GRAVITY:
+            return pygame.image.load(
+                os.path.join(c.ASSETS_FOLDER, "gravity.png"))
 
     def __get_active_timer(self) -> float:
         if self.__power is Powers.UP_SPEED_PLAYER \
@@ -82,6 +86,8 @@ class Power_Up(pygame.sprite.Sprite):
             return c.REVERSED_CONTROLS_TIMER
         elif self.__power is Powers.INVISIBLE_BALL:
             return c.BALL_INVISIBILITY_TIMER
+        elif self.__power is Powers.GRAVITY:
+            return c.GRAVITY_TIMER
         return 0.0
 
     def __get_effect_target(self) -> bool:
@@ -92,7 +98,8 @@ class Power_Up(pygame.sprite.Sprite):
         return True
 
     def __get_random_power(self) -> Powers:
-        power: Powers = choice(list(Powers))
+        # power: Powers = choice(list(Powers))
+        power: Powers = Powers.GRAVITY
         while(power is Powers.NULL_POWER):
             power = choice(list(Powers))
         return power
@@ -117,7 +124,10 @@ class Power_Up(pygame.sprite.Sprite):
         return self.__active_timer
 
     def is_ball_power(self) -> bool:
-        if self.__power in [Powers.SMALLER_BALL, Powers.BIGGER_BALL, Powers.INVISIBLE_BALL]:
+        if self.__power in [Powers.SMALLER_BALL,
+                            Powers.BIGGER_BALL,
+                            Powers.INVISIBLE_BALL,
+                            Powers.GRAVITY]:
             return True
         return False
 
