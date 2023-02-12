@@ -11,7 +11,7 @@ import constants as c
 class Ball(pygame.sprite.Sprite):
     """ Ball class implementing the logic behind all ball movement and physics"""
 
-    def __init__(self, color, radius) -> None:
+    def __init__(self, color: tuple[int, int, int], radius: int, sound_volume: float) -> None:
         super().__init__()
 
         self.__color: tuple[int, int, int] = color
@@ -19,6 +19,7 @@ class Ball(pygame.sprite.Sprite):
 
         self.__bounce_sound: pygame.mixer.Sound = pygame.mixer.Sound(
             os.path.join(c.ASSETS_FOLDER, "bounce.wav"))
+        self.__bounce_sound.set_volume(sound_volume)
 
         self.__last_hit: int = -1
         self.__powers: list[Power_Up] = []

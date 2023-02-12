@@ -15,17 +15,25 @@ pygame.init()
 class Game:
     """ Game class which starts and operates the game. """
 
-    def __init__(self, screen: pygame.Surface, name_1_data: str, name_2_data: str, target: int) -> None:
+    def __init__(self,
+                 screen: pygame.Surface,
+                 name_1_data: str,
+                 name_2_data: str,
+                 target: int,
+                 sound_volume: int,
+                 music_volume: int) -> None:
         self.__screen: pygame.Surface = screen
         self.__name_1: str = name_1_data
         self.__name_2: str = name_2_data
+        self.__sound_volume: float = sound_volume / 100
+        self.__music_volume: float = music_volume / 100
 
         self.__pickup_sound: pygame.mixer.Sound = pygame.mixer.Sound(
             os.path.join(c.ASSETS_FOLDER, "pickup.wav"))
+        self.__pickup_sound.set_volume(self.__sound_volume)
 
         self.__score_1: int = 0
         self.__score_2: int = 0
-        print(target)
         self.__target_score: int = target
         self.__score_break: float = c.GAME_BREAK_AFTER_POINT
 
@@ -37,7 +45,7 @@ class Game:
         self.__paddles[0].set_coordinates(c.PADDLE_1_X, c.PADDLE_1_Y)
         self.__paddles[1].set_coordinates(c.PADDLE_2_X, c.PADDLE_2_Y)
 
-        self.__ball: Ball = Ball(c.WHITE, c.BALL_RADIUS)
+        self.__ball: Ball = Ball(c.WHITE, c.BALL_RADIUS, self.__sound_volume)
         self.__ball.set_coordinates(c.BALL_X, c.BALL_Y)
 
         self.__all_sprites_list: pygame.sprite.Group = pygame.sprite.Group()
@@ -85,7 +93,7 @@ class Game:
         self.__ball.update_powers()
 
     def __apply_power_effect(self, power: Power_Up, player: int, is_ball_power: bool) -> None:
-        """ Method used to apply a power to the correct entity 
+        """ Method used to apply a power to the correct entity
             depending on the power type."""
         if player != -1 and not is_ball_power:
             effected_player = int(
@@ -207,8 +215,9 @@ class Game:
         power_cd: int = c.POWER_UP_CD
         pygame.time.set_timer(pygame.USEREVENT, 1000)
 
-        # pygame.mixer.music.load(os.path.join(c.ASSETS_FOLDER, "music.wav"))
-        # pygame.mixer.music.play(-1)
+        pygame.mixer.music.load(os.path.join(c.ASSETS_FOLDER, "music.wav"))
+        pygame.mixer.music.set_volume(self.__music_volume)
+        pygame.mixer.music.play(-1)
 
         game_running: bool = True
         while game_running:

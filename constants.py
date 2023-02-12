@@ -12,6 +12,9 @@ WHITE: tuple[int, int, int] = (255, 255, 255)
 SCREEN_SIZE: tuple[int, int] = (1280, 720)
 
 ASSETS_FOLDER: str = "assets"
+SETTINGS_FILE: str = "settings.txt"
+
+DEFAULT_VOLUME: int = 50
 
 GAME_BREAK_AFTER_POINT: float = 3
 
