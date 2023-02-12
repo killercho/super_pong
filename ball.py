@@ -1,5 +1,6 @@
 """ Ball file holding the class Ball. """
 
+import os
 from random import randint
 from math import cos, sin
 import pygame
@@ -15,6 +16,9 @@ class Ball(pygame.sprite.Sprite):
 
         self.__color: tuple[int, int, int] = color
         self.__radius: float = radius
+
+        self.__bounce_sound: pygame.mixer.Sound = pygame.mixer.Sound(
+            os.path.join(c.ASSETS_FOLDER, "bounce.wav"))
 
         self.__last_hit: int = -1
         self.__powers: list[Power_Up] = []
@@ -119,14 +123,17 @@ class Ball(pygame.sprite.Sprite):
         self.rect.y += self.__velocity[1] + sign * additional_gravity
 
         if self.rect.y <= c.TOP_LINE_Y + self.__radius:
+            pygame.mixer.Sound.play(self.__bounce_sound)
             self.rect.y = c.TOP_LINE_Y + self.__radius + 1
             self.reverse_velocity_y()
         elif self.rect.y >= c.SCREEN_SIZE[1] - self.__radius * 2:
+            pygame.mixer.Sound.play(self.__bounce_sound)
             self.rect.y = c.SCREEN_SIZE[1] - self.__radius * 2 - 1
             self.reverse_velocity_y()
 
     def bounce(self, additional_velocity: int, paddle_y: int, paddle_height: int) -> None:
         """ Public method handling the bounce of the ball."""
+        pygame.mixer.Sound.play(self.__bounce_sound)
         intersectionY: int = paddle_y + paddle_height / 2 - self.rect.y
         normalized_intersection: float = intersectionY / (paddle_height / 2)
         bounce_angle: float = normalized_intersection * c.BALL_MAX_BOUNCE

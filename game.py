@@ -1,6 +1,7 @@
 """ Game class which operates the game. """
 
 import sys
+import os
 from random import randrange
 import pygame
 import constants as c
@@ -18,6 +19,9 @@ class Game:
         self.__screen: pygame.Surface = screen
         self.__name_1: str = name_1_data
         self.__name_2: str = name_2_data
+
+        self.__pickup_sound: pygame.mixer.Sound = pygame.mixer.Sound(
+            os.path.join(c.ASSETS_FOLDER, "pickup.wav"))
 
         self.__score_1: int = 0
         self.__score_2: int = 0
@@ -133,6 +137,7 @@ class Game:
         colliding_power: Power_Up | None = pygame.sprite.spritecollideany(
             self.__ball, self.__spawned_powers)
         if colliding_power != None:
+            pygame.mixer.Sound.play(self.__pickup_sound)
             self.__apply_power_effect(
                 colliding_power, self.__ball.get_last_hit(), colliding_power.is_ball_power())
             colliding_power.delete_power()
@@ -201,6 +206,9 @@ class Game:
         """ Method handling the game loop."""
         power_cd: int = c.POWER_UP_CD
         pygame.time.set_timer(pygame.USEREVENT, 1000)
+
+        # pygame.mixer.music.load(os.path.join(c.ASSETS_FOLDER, "music.wav"))
+        # pygame.mixer.music.play(-1)
 
         game_running: bool = True
         while game_running:
