@@ -8,6 +8,7 @@ import constants as c
 
 
 class Powers(Enum):
+    """ Enum used to represend all the avaliable powers."""
     NULL_POWER = 0
     UP_SPEED_PLAYER = 1
     DOWN_SPEED_PLAYER = 2
@@ -21,7 +22,7 @@ class Powers(Enum):
 
 
 class Power_Up(pygame.sprite.Sprite):
-    """Power up class holding the main logic needef for a power up."""
+    """ Power up class holding the main logic needed for a power up."""
 
     def __init__(self, spawn_x: int, spawn_y: int) -> None:
         super().__init__()
@@ -41,6 +42,7 @@ class Power_Up(pygame.sprite.Sprite):
         self.rect.y = spawn_y
 
     def __get_icon(self) -> pygame.Surface:
+        """ Method to get the image needed for the specific power."""
         if self.__is_hidden:
             return pygame.image.load(
                 os.path.join(c.ASSETS_FOLDER, "random_power.png"))
@@ -73,6 +75,7 @@ class Power_Up(pygame.sprite.Sprite):
                 os.path.join(c.ASSETS_FOLDER, "gravity.png"))
 
     def __get_active_timer(self) -> float:
+        """ Method to get the specific power's cooldown."""
         if self.__power is Powers.UP_SPEED_PLAYER \
                 or self.__power is Powers.DOWN_SPEED_PLAYER:
             return c.SPEED_TIMER
@@ -91,6 +94,10 @@ class Power_Up(pygame.sprite.Sprite):
         return 0.0
 
     def __get_effect_target(self) -> bool:
+        """ Method to get the effect's target.
+            If the effect is 'False' then the target is the current player.
+            If the effect is 'True' then the target is the opponent 
+            or the ball."""
         if self.__power in [Powers.UP_SPEED_PLAYER,
                             Powers.DOWN_SPEED_PLAYER,
                             Powers.INCREASE_OWN_PADDLE]:
@@ -98,34 +105,44 @@ class Power_Up(pygame.sprite.Sprite):
         return True
 
     def __get_random_power(self) -> Powers:
+        """ Method getting a random power from the enum with powers."""
         power: Powers = choice(list(Powers))
-        while(power is Powers.NULL_POWER):
+        while (power is Powers.NULL_POWER):
             power = choice(list(Powers))
         return power
 
     def __determine_hidden(self) -> bool:
+        """ Method determining if the power will be hidden or not."""
         number: int = randrange(1, len(Powers))
         return number == 1
 
     def get_effect(self) -> str:
+        """ Public method to get the effect of the power."""
         return self.__power
 
     def set_active(self) -> None:
+        """ Public method to activate the power cooldown after activation."""
         self.__active = True
 
     def reset_timer(self) -> None:
+        """ Public method to reset the timer back to it's original value."""
         self.__active_timer = self.__get_active_timer()
 
-    def effects_opponent(self):
+    def effects_opponent(self) -> bool:
+        """ Public method to understand if the power effects 
+            the opponent or not."""
         return self.__effects_opponent
 
     def get_timer(self) -> float:
+        """ Public method to get the timer for the power."""
         return self.__active_timer
 
     def get_image(self) -> pygame.Surface:
+        """ Public method to get the image of the power."""
         return self.image
 
     def is_ball_power(self) -> bool:
+        """ Public method to understand if the power effects the ball."""
         if self.__power in [Powers.SMALLER_BALL,
                             Powers.BIGGER_BALL,
                             Powers.INVISIBLE_BALL,
@@ -134,9 +151,14 @@ class Power_Up(pygame.sprite.Sprite):
         return False
 
     def delete_power(self) -> None:
+        """ Public method to kill the ball."""
         self.kill()
 
     def update_validity(self) -> Powers:
+        """ Public method to check the validity of the ball.
+            If the timer has expired destroy it 
+                and return the destroyed power's effect.
+            Else just lower the timer with one and return the NULL_POWER."""
         if not self.__active:
             if self.__despawn_timer > 0:
                 self.__despawn_timer -= 1

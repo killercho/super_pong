@@ -16,51 +16,33 @@ class Menu:
         # Menu declarations:
         self.__main_menu: pygame_menu.Menu = pygame_menu.Menu("Super Pong", c.SCREEN_SIZE[0], c.SCREEN_SIZE[1],
                                                               theme=c.MENU_THEME)
-        self.__start_menu: pygame_menu.Menu = pygame_menu.Menu("Game settings", c.SCREEN_SIZE[0],
+        self.__start_menu: pygame_menu.Menu = pygame_menu.Menu("Game Lobby", c.SCREEN_SIZE[0],
                                                                c.SCREEN_SIZE[1], theme=c.MENU_THEME)
         self.__options_menu: pygame_menu.Menu = pygame_menu.Menu("Options", c.SCREEN_SIZE[0], c.SCREEN_SIZE[1],
                                                                  theme=c.MENU_THEME)
-        self.__game_id_menu: pygame_menu.Menu = pygame_menu.Menu(
-            "Game Id", c.SCREEN_SIZE[0] // 2, c.SCREEN_SIZE[1] // 2, theme=c.MENU_THEME)
-        self.__game_joined_menu: pygame_menu.Menu = pygame_menu.Menu(
-            "Game lobby", c.SCREEN_SIZE[0], c.SCREEN_SIZE[1], theme=c.MENU_THEME)
-
         # Main menu:
-        self.__name_input = self.__main_menu.add.text_input(
-            "Name: ", default="Guest")
-        self.__main_menu.add.button("Host", self.__start_menu)
-        self.__main_menu.add.button("Join", self.__game_id_menu)
+        self.__main_menu.add.button("Game Lobby", self.__start_menu)
         self.__main_menu.add.button("Options", self.__options_menu)
         self.__main_menu.add.button("Quit", pygame_menu.events.EXIT)
 
-        # Game Id menu:
-        self.__game_id = self.__game_id_menu.add.text_input("Id: ", default="")
-        self.__game_id_menu.add.button("Join game", self.__join_game)
-
-        # Game Joined menu:
-        self.__game_id_label = self.__game_joined_menu.add.label(
-            "")  # self.__game_id.get_value())
-        self.__game_joined_menu.add.button("Ready", self.__player_ready)
-
-        # Host menu:
-        self.__player_label = self.__start_menu.add.label(
-            "Waiting for player...")
-        self.__player_ready_label = self.__start_menu.add.label(
-            "")
-        # Changing the message displayed -> self.__player_label.set_title("playert")
+        # Game menu:
+        self.__name_1_input = self.__start_menu.add.text_input(
+            "Name 1: ", default=c.DEFAULT_NAME_1)
+        self.__name_2_input = self.__start_menu.add.text_input(
+            "Name 2: ", default=c.DEFAULT_NAME_2)
+        self.__target_score_input = self.__start_menu.add.text_input(
+            "Target: ", default="10")
         self.__start_menu.add.button("Start game", self.__start_game)
 
         # Options menu
-        # Options idea -> Music volume and sounds volume,
 
         self.__main_menu.mainloop(self.__screen)
 
-    def __player_ready(self) -> None:
-        pass
-
-    def __join_game(self) -> None:
-        self.__game_id_label.set_title(self.__game_id.get_value())
-        self.__main_menu._open(self.__game_joined_menu)
-
     def __start_game(self) -> Game:
-        return Game(self.__screen, self.__name_input.get_value(), c.DEFAULT_NAME_2)
+        """ Method starting the game loop."""
+        try:
+            target_score = int(self.__target_score_input.get_value())
+        except ValueError:
+            target_score = c.DEFAULT_TARGET
+
+        return Game(self.__screen, self.__name_1_input.get_value(), self.__name_2_input.get_value(), target_score)

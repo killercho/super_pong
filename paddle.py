@@ -14,12 +14,12 @@ class Paddle(pygame.sprite.Sprite):
         self.__player: int = player
         self.__height: int = height
         self.__width: int = width
-        self.__color: tuple = color
+        self.__color: tuple[int, int, int] = color
         self.__speed: float = c.PADDLE_SPEED
         self.__velocity: int = 0
         self.__reversed_controls: bool = False
 
-        self.__powers: list = []
+        self.__powers: list[Power_Up] = []
 
         self.image: pygame.Surface = pygame.Surface(
             [self.__width, self.__height])
@@ -32,6 +32,7 @@ class Paddle(pygame.sprite.Sprite):
         self.rect: pygame.Rect = self.image.get_rect()
 
     def __change_size(self, new_size: int) -> None:
+        """ Method changing the heigth of the paddle."""
         self.__height = new_size
         self.image = pygame.Surface([self.__width, self.__height])
         self.image.fill(c.BLACK)
@@ -45,6 +46,7 @@ class Paddle(pygame.sprite.Sprite):
         self.rect.y = old_y
 
     def __apply_power(self, power: Power_Up) -> None:
+        """ Method appling a power to the paddle."""
         effect: Powers = power.get_effect()
         if effect is Powers.UP_SPEED_PLAYER:
             self.__speed = c.SPEED_INCREASE
@@ -58,40 +60,51 @@ class Paddle(pygame.sprite.Sprite):
             self.__reversed_controls = True
 
     def __reverse_effects(self, effect: Powers) -> None:
+        """ Method reversing the effect of a scpecific power."""
         if effect is Powers.UP_SPEED_PLAYER or effect is Powers.DOWN_SPEED_PLAYER:
             self.__speed = c.PADDLE_SPEED
-        elif effect is Powers.INCREASE_OWN_PADDLE or effect is Powers.DECREASE_OPPONENT_PADDLE:
+        elif effect is Powers.INCREASE_OWN_PADDLE \
+                or effect is Powers.DECREASE_OPPONENT_PADDLE:
             self.__change_size(c.PADDLE_LENGTH)
         elif effect is Powers.REVERSED_CONTROLS:
             self.__reversed_controls = False
 
     def get_coordinates(self) -> tuple:
+        """ Public method to get the coordinates of the paddle."""
         return (self.rect.x, self.rect.y)
 
     def get_player(self) -> int:
+        """ Public method to get the player number."""
         return self.__player
 
     def get_height(self) -> int:
+        """ Public method to get the height of the paddle."""
         return self.__height
 
     def set_coordinates(self, new_x: int, new_y: int) -> None:
-        """Method implementing a way to set the coordinates of the paddle whenever needed."""
+        """ Public method implementing a way to set the coordinates
+            of the paddle whenever needed."""
         self.rect.x = new_x
         self.rect.y = new_y
 
     def get_speed(self) -> int:
+        """ Public method to get the movement speed of the paddle."""
         return self.__speed
 
     def set_speed(self, new_speed: int) -> None:
+        """ Publci method to set the speed of the paddle."""
         self.__speed = new_speed
 
     def get_velocity(self) -> int:
+        """ Public method to get the movement velocity of the paddle."""
         return self.__velocity
 
     def get_powers_images(self) -> list:
+        """ Public method to get the images of all active powers."""
         return [power.get_image() for power in self.__powers]
 
     def add_power(self, new_power: Power_Up) -> None:
+        """ Public method to add a power to the paddle."""
         powers_arr: list = [p.get_effect() for p in self.__powers]
         if new_power.get_effect() not in powers_arr:
             new_power.set_active()
@@ -103,11 +116,13 @@ class Paddle(pygame.sprite.Sprite):
                     power.reset_timer()
 
     def reverse_all_powers(self) -> None:
+        """ Public method to reverse all active powers."""
         for power in self.__powers:
             self.__reverse_effects(power.get_effect())
         self.__powers.clear()
 
     def update_powers(self) -> None:
+        """ Public method updating the validity of the active powers."""
         for power in self.__powers:
             effect: Powers = power.update_validity()
             if effect is not Powers.NULL_POWER:
@@ -115,6 +130,7 @@ class Paddle(pygame.sprite.Sprite):
                 self.__reverse_effects(effect)
 
     def update(self) -> None:
+        """ Public method handling the bounds detection."""
         self.__velocity = 0
 
         # top line detection
@@ -132,7 +148,7 @@ class Paddle(pygame.sprite.Sprite):
             self.rect.y = c.BOTTOM_LINE_Y + bottom_correction
 
     def move_up(self) -> None:
-        """Method allowing for the paddles to move up."""
+        """ Public method allowing for the paddles to move up."""
         if not self.__reversed_controls:
             self.rect.y -= self.__speed
         else:
@@ -140,7 +156,7 @@ class Paddle(pygame.sprite.Sprite):
         self.__velocity = self.__speed
 
     def move_down(self) -> None:
-        """Method allowing for the paddles to move down."""
+        """ Public method allowing for the paddles to move down."""
         if not self.__reversed_controls:
             self.rect.y += self.__speed
         else:

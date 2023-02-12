@@ -14,21 +14,22 @@ pygame.init()
 class Game:
     """ Game class which starts and operates the game. """
 
-    def __init__(self, screen: pygame.Surface, name_1_data: str, name_2_data: str) -> None:
+    def __init__(self, screen: pygame.Surface, name_1_data: str, name_2_data: str, target: int) -> None:
         self.__screen: pygame.Surface = screen
         self.__name_1: str = name_1_data
         self.__name_2: str = name_2_data
 
         self.__score_1: int = 0
         self.__score_2: int = 0
-        self.__target_score: int = 50
+        print(target)
+        self.__target_score: int = target
         self.__score_break: float = c.GAME_BREAK_AFTER_POINT
 
         self.__spawned_powers: pygame.sprite.Group = pygame.sprite.Group()
         self.__spawned_powers_count: int = 0
 
-        self.__paddles: list = [Paddle(0, c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH),
-                                Paddle(1, c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)]
+        self.__paddles: list[Paddle] = [Paddle(0, c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH),
+                                        Paddle(1, c.WHITE, c.PADDLE_WIDTH, c.PADDLE_LENGTH)]
         self.__paddles[0].set_coordinates(c.PADDLE_1_X, c.PADDLE_1_Y)
         self.__paddles[1].set_coordinates(c.PADDLE_2_X, c.PADDLE_2_Y)
 
@@ -46,6 +47,7 @@ class Game:
         self.__start_game()
 
     def __spawn_random_power(self) -> None:
+        """ Method handling the spawning of powers."""
         new_power_x: int = randrange(
             c.POWER_OFFSET, c.SCREEN_SIZE[0] - c.POWER_OFFSET)
         new_power_y = randrange(
@@ -55,26 +57,32 @@ class Game:
         self.__spawned_powers_count += 1
 
     def __clean_spawned_powers(self) -> None:
+        """ Method cleaning the spawned powers after a cooldown."""
         for power in self.__spawned_powers:
             power.update_validity()
 
     def __clean_all_spanwed_powers(self) -> None:
+        """ Method forcing all the powers to be deleted."""
         for power in self.__spawned_powers:
             power.delete_power()
         self.__spawned_powers_count = 0
         self.__spawned_powers.empty()
 
     def __reverse_all_powers(self) -> None:
+        """ Method reversing all powers applied to the paddles and the ball."""
         for paddle in self.__paddles:
             paddle.reverse_all_powers()
         self.__ball.reverse_all_powers()
 
     def __tick_active_powers(self) -> None:
+        """ Method used to check the validity of the active powers."""
         for paddle in self.__paddles:
             paddle.update_powers()
         self.__ball.update_powers()
 
     def __apply_power_effect(self, power: Power_Up, player: int, is_ball_power: bool) -> None:
+        """ Method used to apply a power to the correct entity 
+            depending on the power type."""
         if player != -1 and not is_ball_power:
             effected_player = int(
                 not player) if power.effects_opponent() else player
@@ -86,6 +94,7 @@ class Game:
             self.__spawned_powers_count -= 1
 
     def __apply_score_break(self) -> None:
+        """ Method handling the break after a point is scored."""
         self.__clean_all_spanwed_powers()
         self.__reverse_all_powers()
         self.__paddles[0].set_coordinates(c.PADDLE_1_X, c.PADDLE_1_Y)
@@ -93,6 +102,7 @@ class Game:
         self.__ball.reset_ball()
 
     def __handle_ball_movement(self) -> None:
+        """ Method handling the ball movement."""
         radius = self.__ball.get_radius()
         if self.__ball.get_ball_position()[0] >= c.SCREEN_SIZE[0] - radius * 2:
             self.__score_1 += 1
@@ -104,6 +114,7 @@ class Game:
             self.__apply_score_break()
 
     def __handle_collision(self) -> None:
+        """ Method handling the collision between the entities."""
         hit_paddle_1 = pygame.sprite.collide_mask(
             self.__ball, self.__paddles[0])
         hit_paddle_2 = pygame.sprite.collide_mask(
@@ -127,6 +138,7 @@ class Game:
             colliding_power.delete_power()
 
     def __handle_input(self) -> None:
+        """ Method handling player input."""
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[pygame.K_w]:
             self.__paddles[0].move_up()
@@ -138,6 +150,7 @@ class Game:
             self.__paddles[1].move_down()
 
     def __create_middle_line(self) -> None:
+        """ Method creating and rendering the middle line."""
         for i in range(0, c.SCREEN_SIZE[1], c.MIDDLE_LINES_STEP):
             vertical_line_size: tuple = (c.LINES_WIDTH, 64)
             vertical_line: pygame.Surface = pygame.Surface(
@@ -151,12 +164,14 @@ class Game:
                          c.LINES_WIDTH)
 
     def __render_break_timer(self, timer: int) -> None:
+        """ Method rendering the timer during the breaks."""
         font: pygame.font.Font = pygame.font.Font(None, 200)
         text: pygame.Surface = font.render(str(timer), 1, c.WHITE)
         self.__screen.blit(
             text, (c.SCREEN_SIZE[0] / 2 - 35, c.SCREEN_SIZE[1] / 2 - 35))
 
     def __render_powers_list(self, paddle: Paddle) -> None:
+        """ Method rendering the list of all active powers."""
         all_powers: list = paddle.get_powers_images()
         for i in range(0, len(all_powers)):
             location: int = i * c.POWER_UP_SIDE + 300 + 800 * paddle.get_player()
@@ -164,24 +179,26 @@ class Game:
                 all_powers[i], (location, 40))
 
     def __render_top_info(self) -> None:
+        """ Method rendering all the info on top."""
         text: pygame.Surface = self.__INGAME_TEXT_FONT.render(
             str(self.__score_1), 1, c.WHITE)
-        self.__screen.blit(text, (552, 20))
+        self.__screen.blit(text, (560, 20))
         text: pygame.Surface = self.__INGAME_TEXT_FONT.render(
             str(self.__score_2), 1, c.WHITE)
-        self.__screen.blit(text, (692, 20))
+        self.__screen.blit(text, (680, 20))
 
         text: pygame.Surface = self.__INGAME_TEXT_FONT.render(
             self.__name_1, 1, c.WHITE)
         self.__screen.blit(text, (50, 20))
         text: pygame.Surface = self.__INGAME_TEXT_FONT.render(
             self.__name_2, 1, c.WHITE)
-        self.__screen.blit(text, (750, 20))
+        self.__screen.blit(text, (765, 20))
 
         for paddle in self.__paddles:
             self.__render_powers_list(paddle)
 
     def __start_game(self) -> None:
+        """ Method handling the game loop."""
         power_cd: int = c.POWER_UP_CD
         pygame.time.set_timer(pygame.USEREVENT, 1000)
 
@@ -225,8 +242,12 @@ class Game:
 
             pygame.display.flip()
 
-            if self.__score_1 >= self.__target_score or self.__score_2 >= self.__target_score:
+            if self.__score_1 >= self.__target_score:
                 game_running = False
+                print("Player one wins!")
+            elif self.__score_2 >= self.__target_score:
+                game_running = False
+                print("Player two wins!")
 
             self.__clock.tick(60)
 

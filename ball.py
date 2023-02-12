@@ -13,11 +13,11 @@ class Ball(pygame.sprite.Sprite):
     def __init__(self, color, radius) -> None:
         super().__init__()
 
-        self.__color: tuple = color
+        self.__color: tuple[int, int, int] = color
         self.__radius: float = radius
 
         self.__last_hit: int = -1
-        self.__powers: list = []
+        self.__powers: list[Power_Up] = []
         self.__gravity_effected: bool = False
 
         self.image: pygame.Surface = pygame.Surface(
@@ -36,6 +36,7 @@ class Ball(pygame.sprite.Sprite):
         self.rect: pygame.Rect = self.image.get_rect()
 
     def __change_surface(self, new_radius: float, new_color: tuple) -> None:
+        """ Method changing the radius or the colour of the ball. """
         self.__radius = new_radius
         self.__color = new_color
         self.image: pygame.Surface = pygame.Surface(
@@ -50,6 +51,7 @@ class Ball(pygame.sprite.Sprite):
         self.set_coordinates(old_x, old_y)
 
     def __apply_power(self, power: Power_Up) -> None:
+        """ Method applying a specific power to the ball. """
         effect: Powers = power.get_effect()
         if effect is Powers.SMALLER_BALL:
             self.__change_surface(c.BALL_DECREASED_RADIUS, c.WHITE)
@@ -61,6 +63,7 @@ class Ball(pygame.sprite.Sprite):
             self.__gravity_effected = True
 
     def __reverse_effects(self, effect: Powers) -> None:
+        """ Method reversing a specific effect applied previously to the ball. """
         if effect is Powers.SMALLER_BALL \
             or effect is Powers.BIGGER_BALL \
                 or effect is Powers.INVISIBLE_BALL:
@@ -69,7 +72,8 @@ class Ball(pygame.sprite.Sprite):
             self.__gravity_effected = False
 
     def add_power(self, new_power: Power_Up) -> None:
-        powers_arr: list = [p.get_effect() for p in self.__powers]
+        """ Public method for adding a power to the ball. """
+        powers_arr: list[Powers] = [p.get_effect() for p in self.__powers]
         if new_power.get_effect() not in powers_arr:
             new_power.set_active()
             self.__powers.append(new_power)
@@ -80,11 +84,13 @@ class Ball(pygame.sprite.Sprite):
                     power.reset_timer()
 
     def reverse_all_powers(self) -> None:
+        """ Public method used to reverse all applied powers to the ball. """
         for power in self.__powers:
             self.__reverse_effects(power.get_effect())
         self.__powers.clear()
 
     def update_powers(self) -> None:
+        """ Public method used to track whether a power's effect has ended. """
         for power in self.__powers:
             effect: str = power.update_validity()
             if effect is not Powers.NULL_POWER:
@@ -103,7 +109,7 @@ class Ball(pygame.sprite.Sprite):
         self.set_coordinates(c.BALL_X, c.BALL_Y)
 
     def update(self) -> None:
-        """Method updating the movement of the ball."""
+        """ Public method handling the movement of the ball."""
         additional_gravity: int = c.GRAVITY_STRENGHT \
             if self.__gravity_effected else 0
 
@@ -120,7 +126,7 @@ class Ball(pygame.sprite.Sprite):
             self.reverse_velocity_y()
 
     def bounce(self, additional_velocity: int, paddle_y: int, paddle_height: int) -> None:
-        """Method implementing the bounce of the ball."""
+        """ Public method handling the bounce of the ball."""
         intersectionY: int = paddle_y + paddle_height / 2 - self.rect.y
         normalized_intersection: float = intersectionY / (paddle_height / 2)
         bounce_angle: float = normalized_intersection * c.BALL_MAX_BOUNCE
@@ -134,27 +140,30 @@ class Ball(pygame.sprite.Sprite):
             self.__velocity[1]*(sin(bounce_angle))
 
     def get_last_hit(self) -> None:
+        """ Public method to get the last player that touched the ball. """
         return self.__last_hit
 
     def set_last_hit(self, player: int) -> None:
+        """ Public method to set the last player that touched the ball. """
         self.__last_hit = player
 
     def set_coordinates(self, new_x: int, new_y: int) -> None:
-        """Method implementing a way to set coordinates to the ball when needed."""
+        """ Public method implementing a way to set coordinates to the ball when needed."""
         self.rect.x = new_x
         self.rect.y = new_y
 
     def get_ball_position(self) -> None:
-        """Method allowing for the ball position to be accessed."""
+        """Public method allowing for the ball position to be accessed."""
         return self.rect.x, self.rect.y
 
     def get_radius(self) -> float:
+        """ Public method to get the radius of the ball."""
         return self.__radius
 
     def reverse_velocity_x(self) -> None:
-        """Method reversing x velocity of the ball."""
+        """ Public method reversing x velocity of the ball."""
         self.__velocity[0] = -self.__velocity[0]
 
     def reverse_velocity_y(self) -> None:
-        """Method reversing y velocity of the ball."""
+        """ Public method reversing y velocity of the ball."""
         self.__velocity[1] = -self.__velocity[1]

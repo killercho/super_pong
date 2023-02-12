@@ -3,15 +3,15 @@
 import pygame_menu
 from math import pi
 
-BLACK: tuple = (0, 0, 0)
-RED: tuple = (255, 0, 0)
-GREEN: tuple = (0, 255, 0)
-BLUE: tuple = (0, 0, 255)
-WHITE: tuple = (255, 255, 255)
+BLACK: tuple[int, int, int] = (0, 0, 0)
+RED: tuple[int, int, int] = (255, 0, 0)
+GREEN: tuple[int, int, int] = (0, 255, 0)
+BLUE: tuple[int, int, int] = (0, 0, 255)
+WHITE: tuple[int, int, int] = (255, 255, 255)
 
-SCREEN_SIZE: tuple = (1280, 720)
+SCREEN_SIZE: tuple[int, int] = (1280, 720)
 
-ASSETS_FOLDER = "assets"
+ASSETS_FOLDER: str = "assets"
 
 GAME_BREAK_AFTER_POINT: float = 3
 
@@ -41,11 +41,12 @@ PADDLE_2_Y: int = (SCREEN_SIZE[1] - PADDLE_LENGTH) / 2
 
 PADDLE_SPEED: int = 6
 
-MENU_THEME = pygame_menu.themes.THEME_DARK
+MENU_THEME: pygame_menu.Theme = pygame_menu.themes.THEME_DARK
 
 DEFAULT_NAME_1: str = "Player 1"
 DEFAULT_NAME_2: str = "Player 2"
 MAX_NAME_SYMBOLS: int = 10
+DEFAULT_TARGET: int = 10
 
 # Power ups and their constants
 POWER_UP_SIDE: int = 20
