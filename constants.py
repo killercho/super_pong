@@ -45,14 +45,14 @@ MENU_THEME: pygame_menu.Theme = pygame_menu.themes.THEME_DARK
 
 DEFAULT_NAME_1: str = "Player 1"
 DEFAULT_NAME_2: str = "Player 2"
-MAX_NAME_SYMBOLS: int = 10
+MAX_NAME_SYMBOLS: int = 8
 DEFAULT_TARGET: int = 10
 
 # Power ups and their constants
 POWER_UP_SIDE: int = 20
-POWER_UP_CD: float = 1  # was 3
+POWER_UP_CD: float = 2  # was 3
 POWER_OFFSET: int = 100
-ACTIVE_POWER_CD: float = 4
+ACTIVE_POWER_CD: float = 5
 
 SPEED_INCREASE: float = 1.5 * PADDLE_SPEED
 SPEED_DECREASE: float = 0.5 * PADDLE_SPEED

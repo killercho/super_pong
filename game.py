@@ -174,7 +174,7 @@ class Game:
         """ Method rendering the list of all active powers."""
         all_powers: list = paddle.get_powers_images()
         for i in range(0, len(all_powers)):
-            location: int = i * c.POWER_UP_SIDE + 300 + 800 * paddle.get_player()
+            location: int = i * c.POWER_UP_SIDE + 350 + 800 * paddle.get_player()
             self.__screen.blit(
                 all_powers[i], (location, 40))
 

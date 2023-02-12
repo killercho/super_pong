@@ -45,4 +45,7 @@ class Menu:
         except ValueError:
             target_score = c.DEFAULT_TARGET
 
-        return Game(self.__screen, self.__name_1_input.get_value(), self.__name_2_input.get_value(), target_score)
+        return Game(self.__screen,
+                    self.__name_1_input.get_value()[:c.MAX_NAME_SYMBOLS],
+                    self.__name_2_input.get_value()[:c.MAX_NAME_SYMBOLS],
+                    target_score)
